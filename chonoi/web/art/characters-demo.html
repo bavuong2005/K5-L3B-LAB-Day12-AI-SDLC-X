@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><title>Chợ Nổi — nhân vật demo</title>
+<style>body{margin:0;background:#10222c;color:#dff;font:13px system-ui,sans-serif}
+#bar{padding:6px 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{background:#1d4a5c;color:#dff;border:1px solid #3a8aa5;border-radius:4px;padding:3px 8px;cursor:pointer}
+canvas{display:block}</style></head><body>
+<div id="bar"><b>Chợ Nổi · nhân vật</b><span id="fps">fps -</span>
+<button id="pause">Pause</button><button id="flip">Lật hướng</button><button id="stress">Stress x10</button></div>
+<pre id="err" style="color:#f88;margin:0 10px"></pre>
+<script>window.onerror=function(m,u,l){document.getElementById("err").textContent+=m+" @"+l+"\n"}</script>
+<script src="../pixi.min.js"></script><script src="characters.js"></script>
+<script>
+const C = window.ChoNoiArt.characters, W = 1240, CW = 150, ROWH = 170;
+const app = new PIXI.Application({ width: W, height: 760, background: 0x10222c, antialias: true, resolution: window.devicePixelRatio || 1, autoDensity: true });
+document.body.appendChild(app.view);
+const rows = []; let y0 = 0, facing = 1, paused = false;
+function label(txt, x, y, size) { const t = new PIXI.Text(txt, { fontSize: size || 12, fill: 0xcfeeff, fontFamily: "sans-serif" }); t.x = x; t.y = y; app.stage.addChild(t); return t; }
+function cell(x, y, w, h, kind) {
+  const g = new PIXI.Graphics();
+  if (kind === "water") { g.beginFill(0x14a0b0); g.drawRoundedRect(x, y, w, h, 8); g.endFill(); g.beginFill(0x5fe0d8, .35); g.drawRoundedRect(x, y, w, h * .45, 8); g.endFill(); }
+  else if (kind === "table") { g.beginFill(0x3b2a20); g.drawRoundedRect(x, y, w, h, 8); g.endFill(); g.beginFill(0x8b5a2b); g.drawRect(x, y + 120, w, 8); g.endFill(); g.beginFill(0x5c3a1c); g.drawRect(x, y + 128, w, h - 128); g.endFill(); }
+  else { g.beginFill(0x4a3a2a); g.drawRoundedRect(x, y, w, h, 8); g.endFill(); g.beginFill(0x6a4a2a); g.drawRect(x, y + 138, w, h - 138); g.endFill(); }
+  app.stage.addChild(g);
+}
+function addRow(title, kind, items, ground) { // items: [{label, make()}]
+  const y = y0; label(title, 6, y + 2, 13); const chars = [];
+  items.forEach((it, i) => {
+    const x = 6 + i * (CW + 4), cy = y + 22;
+    cell(x, cy, CW, ROWH - 26, kind); label(it.label, x + 6, cy + 4);
+    const c = it.make(); c.container.x = x + CW / 2; c.container.y = cy + ground; app.stage.addChild(c.container);
+    c.setFacing(facing); c.states_label = it.label; chars.push(c);
+  });
+  rows.push({ title, chars }); y0 += ROWH + 4;
+}
+const q = new URLSearchParams(location.search), frozen = q.has("t");
+C.states.diver.forEach(() => 0);
+addRow("Diver (Trường con)", "water", C.states.diver.map(s => ({ label: s, make: () => { const c = C.createDiver(PIXI, { }); c.setState(s); return c; } })), 85);
+addRow("Customer — mood × seed", "table", [0,1,2,3,4,5,6,7].map(i => ({ label: "seed " + i + " " + ["calm","impatient","angry","happy"][i % 4], make: () => C.createCustomer(PIXI, { seed: i * 3 + 1, mood: ["calm","impatient","angry","happy"][i % 4] }) })), 120);
+addRow("Customer — 8 seeds khác (calm) / eating", "table", [11,12,13,14,15,16,17,18].map(i => ({ label: "seed " + i + (i > 16 ? " eating" : " calm"), make: () => { const c = C.createCustomer(PIXI, { seed: i }); if (i > 16) c.setState("eating"); return c; } })), 120);
+const ck = C.states.chef.map(s => ({ label: "chef " + s, make: () => { const c = C.createChef(PIXI); c.setState(s); return c; } }));
+const wk = C.states.waiter.map(s => ({ label: "waiter " + s, make: () => { const c = C.createWaiter(PIXI); c.setState(s); return c; } }));
+addRow("Chef (3) + Waiter (5)", "floor", ck.concat(wk), 135);
+const all = () => rows.flatMap(r => r.chars);
+// nút theo hàng: bấm vào ô để đổi trạng thái tiếp theo
+app.view.addEventListener("click", e => {
+  const r = app.view.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+  rows.forEach((row, ri) => { const ry = 28 + ri * (ROWH + 4); if (my < ry || my > ry + ROWH) return;
+    const i = Math.floor((mx - 6) / (CW + 4)), c = row.chars[i]; if (!c) return;
+    const s = c.states, n = s[(s.indexOf(c.state) + 1) % s.length]; c.setState(n); });
+});
+document.getElementById("pause").onclick = () => paused = !paused;
+document.getElementById("flip").onclick = () => { facing = -facing; all().forEach(c => c.setFacing(facing)); };
+let extra = [];
+document.getElementById("stress").onclick = () => {
+  extra.forEach(c => c.destroy()); extra = [];
+  for (let i = 0; i < 10; i++) { const c = [C.createDiver, C.createCustomer, C.createChef, C.createWaiter][i % 4](PIXI, { seed: i, scale: .6, x: 20 + i * 120, y: 740 }); c.setState(i % 4 === 0 ? "swim" : i % 4 === 2 ? "cook" : i % 4 === 3 ? "carry" : "angry"); app.stage.addChild(c.container); extra.push(c); }
+};
+let frames = 0, acc = 0; window.__fps = 0;
+app.ticker.add(() => { const dt = app.ticker.deltaMS / 1000; if (!paused) { all().forEach(c => c.update(dt)); extra.forEach(c => c.update(dt)); }
+  frames++; acc += dt; if (acc >= 1) { window.__fps = frames / acc; document.getElementById("fps").textContent = "fps " + window.__fps.toFixed(0); frames = 0; acc = 0; } });
+if (q.has("bench")) { const cs = []; for (let i = 0; i < 10; i++) cs.push([C.createDiver, C.createCustomer, C.createChef, C.createWaiter][i % 4](PIXI, { seed: i }));
+  cs.forEach((c, i) => c.setState(["swim", "angry", "burn", "carry"][i % 4])); const t0 = performance.now(); for (let k = 0; k < 600; k++) cs.forEach(c => c.update(1 / 60));
+  const ms = (performance.now() - t0) / 600; document.title = "BENCH update(10 chars)=" + ms.toFixed(3) + "ms/frame"; document.getElementById("err").textContent = document.title; }
+window.__ready = true; window.__app = app;
+if (q.has("stress")) document.getElementById("stress").click();
+</script></body></html>

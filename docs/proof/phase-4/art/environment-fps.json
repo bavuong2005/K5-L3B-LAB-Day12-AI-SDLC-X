@@ -1,0 +1,18 @@
+{
+ "note": "headless Chrome (new), software GL, 1280x720 DPR1, vsync+frame limit off, 10s; [avg_fps, 1%low_fps, frames]",
+ "gather_scrolling_full_scene": [
+  74.8,
+  23.6,
+  750
+ ],
+ "quan": [
+  132.7,
+  112.4,
+  1329
+ ],
+ "gather_with_fx": [
+  74.9,
+  26.9,
+  749
+ ]
+}

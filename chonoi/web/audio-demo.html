@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ChoNoiAudio demo</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#1b2a30;color:#f3ead7;max-width:640px;margin:24px auto;padding:0 16px}
+button{font-size:16px;margin:4px;padding:8px 14px;border-radius:8px;border:1px solid #6b8;background:#27434a;color:inherit;cursor:pointer}
+button.on{background:#d9a441;color:#222}
+label{display:block;margin:14px 0 4px}input[type=range]{width:100%}
+#log{font:12px monospace;opacity:.8;margin-top:16px}
+</style></head><body>
+<h1>Cho Noi - music demo</h1>
+<p>Click any scene to start audio (user gesture). Key <b>M</b> toggles mute.</p>
+<div id="scenes"></div>
+<button id="stop">Stop</button> <button id="mute">Mute (M)</button>
+<label>Depth: <span id="dv">0</span> m<input id="depth" type="range" min="0" max="250" value="0"></label>
+<label>Intensity: <span id="iv">0</span><input id="int" type="range" min="0" max="100" value="0"></label>
+<label>Volume: <span id="vv">70</span>%<input id="vol" type="range" min="0" max="100" value="70"></label>
+<div id="log"></div>
+<script src="audio.js"></script>
+<script>
+var A = window.ChoNoiAudio, box = document.getElementById("scenes"), btns = {};
+function log(s){document.getElementById("log").textContent = s + " | " + JSON.stringify(A._stats());}
+A.scenes.forEach(function(n){
+  var b=document.createElement("button"); b.textContent=n; btns[n]=b; box.appendChild(b);
+  b.onclick=function(){A.init();A.setScene(n);for(var k in btns)btns[k].classList.toggle("on",k===n);log("scene "+n);};
+});
+document.getElementById("stop").onclick=function(){A.stop();for(var k in btns)btns[k].classList.remove("on");log("stopped");};
+function toggleMute(){A.setMuted(!A.isMuted());document.getElementById("mute").classList.toggle("on",A.isMuted());log("muted="+A.isMuted());}
+document.getElementById("mute").onclick=function(){A.init();toggleMute();};
+addEventListener("keydown",function(e){if(e.key==="m"||e.key==="M")toggleMute();});
+function bind(id,out,fn,fmt){var el=document.getElementById(id);el.oninput=function(){document.getElementById(out).textContent=fmt?fmt(el.value):el.value;fn(+el.value);};}
+bind("depth","dv",function(v){A.setDepth(v);});
+bind("int","iv",function(v){A.setIntensity(v/100);},function(v){return (v/100).toFixed(2);});
+bind("vol","vv",function(v){A.setVolume(v/100);});
+</script></body></html>

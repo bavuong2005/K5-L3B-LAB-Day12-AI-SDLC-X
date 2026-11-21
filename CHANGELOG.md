@@ -3,6 +3,11 @@
 ## Unreleased
 
 ### Phase 4
+- `chonoi.bench` (`--seed --duration --out`, làm nóng 3 s, 5 trường JSON) và `chonoi.soak` (`--seed --days --out`, `gather → quan → shop`, D1–D5 lặp Ngày 6–10). Tag `v1.0.0`.
+- UI: cảnh báo chữ cho thủy quái gần, oxy sắp hết, khách sắp giận; tương phản cao (phím C); SFX WebAudio và phụ đề SFX (M/N).
+- Mở rộng `burn` (món cháy sau 20 s trên bếp, TV4).
+- `tools/package.py` tạo `dist/chonoi-v1.0.0.zip`. Bằng chứng ở `docs/proof/phase-4/`, ma trận ở `docs/verification/phase-4.md`.
+- Mở rộng `leaderboard` (`chonoi/leaderboard.py`): cờ `--leaderboard/--player-name` (headless day) và `--export-leaderboard`. Mặc định không đổi.
 - `contract_version` là `"1.3"`. Gameplay và schema kho giữ v1.2 (cá thể). `bench_cmd` và `soak_cmd` đọc version này.
 - File kho đếm đưa vào headless/live trả mã 2. Mẫu đang chạy: `docs/contracts/inventory.sample.json`.
 

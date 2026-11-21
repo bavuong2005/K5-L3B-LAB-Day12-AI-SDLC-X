@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><title>Chợ Nổi - environment demo</title>
+<style>html,body{margin:0;background:#050b14;overflow:hidden}canvas{display:block}#hud{position:fixed;left:8px;top:6px;color:#fff;font:12px monospace;text-shadow:0 0 3px #000;white-space:pre}</style></head>
+<body><div id="hud"></div>
+<script>window.addEventListener('error',function(e){window.__err=(window.__err||'')+e.message+' @'+e.lineno+';'});</script>
+<script src="../pixi.min.js"></script><script src="environment.js"></script>
+<script>
+// ?view=gather|quan|fx  &cam=<px depth> (cố định)  &x=<camX>  &auto=0|1  &bench=1 (không vsync, đo fps)
+var Q = new URLSearchParams(location.search), view = Q.get('view') || 'gather';
+var W = 1280, H = 720, E = ChoNoiArt.env;
+var app = new PIXI.Application({ width: W, height: H, background: 0x050b14, antialias: true, resolution: 1 });
+document.body.appendChild(app.view);
+var S = app.stage, items = [];
+var stats = { frames: 0, ts: [] }; window.__stats = stats;
+var fx = E.createFX(PIXI);
+var camX = +(Q.get('x') || 0), camD = +(Q.get('cam') || 0), auto = Q.get('auto') !== '0' && !Q.has('cam');
+var uw, sf, quan, fishes = [], croc, nodes = [], crocs = [], crits = [];
+if (view === 'gather' || view === 'fx') {
+  uw = E.createUnderwater(PIXI, { width: W, height: H });
+  sf = E.createSurface(PIXI, { width: W, height: H });
+  S.addChild(uw.container); S.addChild(sf.container);
+  var P = uw.pxPerX, D = uw.pxPerDepth;
+  var kinds = ['ca_linh', 'ca_loc', 'ca_keo'], pos = [[8, 5], [12, 8], [16, 6], [20, 12], [24, 15], [28, 10], [10, 16], [14, 24], [20, 26], [26, 23], [30, 9], [34, 18]];
+  pos.forEach(function (p, i) { var k = kinds[i % 3], f = E.createFish(PIXI, k); f.setFacing(i % 2 ? -1 : 1); f.setSpeed(0.8 + (i % 3) * 0.5);
+    uw.actors.addChild(f.container); fishes.push({ f: f, x: p[0] * P, y: p[1] * D, v: (i % 2 ? -1 : 1) * 30 }); items.push(f); });
+  [['patrol', 20, 24], ['chase', 26, 19], ['recoil', 15, 14]].forEach(function (c) { var m = E.createCrocodile(PIXI); m.setState(c[0]); if (c[0] === 'patrol') m.setWarning(true); m.container.x = 0;
+    uw.actors.addChild(m.container); crocs.push({ m: m, x: c[1] * P, y: c[2] * D }); items.push(m); });
+  ['bong_dien_dien', 'bong_sung', 'sen', 'keo_neo'].forEach(function (k, i) { var n = E.createNode(PIXI, k); sf.actors.addChild(n.container); nodes.push({ n: n, x: (6 + i * 5) * P }); items.push(n); if (i === 1) n.setHighlight(true); if (i === 3) n.setHarvested(true); });
+  uw.setRuler(true).setDepthLimit(20);
+  [['jellyfish', 9, 7, 0], ['jellyfish', 18, 17, 0], ['jellyfish', 30, 13, 0], ['pufferfish', 14, 11, 20], ['pufferfish', 25, 8, -18], ['pufferfish', 33, 21, 15],
+   ['crab', 11, 29.2, 8], ['crab', 27, 29.3, -9], ['shell', 16, 29.6, 0], ['shell', 22, 29.5, 0], ['starfish', 31, 29.6, 0]].forEach(function (c) {
+    var m = E.createCreature(PIXI, c[0]); m.setFacing(c[3] < 0 ? -1 : 1); uw.actors.addChild(m.container); items.push(m);
+    crits.push({ m: m, x: c[1] * P, y: c[2] * D, v: c[3], x0: c[1] * P }); });
+  S.addChild(fx.container);
+  if (view === 'fx') { fx.spoiled(500, 400); fx.smoke(700, 400); setInterval(function () { fx.burst(900, 380); fx.hit(1050, 380); }, 700); }
+} else if (view === 'gallery') {
+  var bgG = new PIXI.Graphics().beginFill(0x1f9fae).drawRect(0, 0, W, H).endFill().beginFill(0x167e96, 0.6).drawRect(0, H * 0.6, W, H * 0.4).endFill(); S.addChild(bgG);
+  var gl = new PIXI.Container(); S.addChild(gl);
+  var row = function (list, y, sc, x0, dx) { list.forEach(function (o, i) { o.container.scale.set(sc); o.container.x = x0 + i * dx; o.container.y = y; gl.addChild(o.container); items.push(o); }); };
+  row(['ca_linh', 'ca_loc', 'ca_keo'].map(function (k) { var f = E.createFish(PIXI, k); f.setSpeed(1.2); return f; }), 110, 2.6, 210, 330);
+  var cs = ['patrol', 'chase', 'recoil'].map(function (st) { var m = E.createCrocodile(PIXI); m.setState(st); if (st === 'patrol') m.setWarning(true); return m; });
+  row(cs, 300, 1.15, 190, 400);
+  row(['sen', 'bong_dien_dien', 'bong_sung', 'keo_neo'].map(function (k) { var n = E.createNode(PIXI, k); n.setHighlight(k === 'bong_sung'); return n; }), 480, 1.9, 150, 280);
+  row(['jellyfish', 'pufferfish', 'crab', 'shell', 'starfish'].map(function (k) { return E.createCreature(PIXI, k); }), 650, 2.2, 110, 230);
+  var lab = new PIXI.Text('Cá: ca_linh ca_loc ca_keo | Cá Sấu: patrol chase recoil | Nút: sen dien_dien bong_sung keo_neo | jellyfish pufferfish crab shell starfish', { fontSize: 13, fill: 0xffffff }); lab.x = 10; lab.y = 4; S.addChild(lab);
+} else {
+  quan = E.createQuanScene(PIXI, { width: W, height: H }); S.addChild(quan.container); items.push(quan);
+  quan.setStove('B1', 'cooking'); quan.setStove('B2', 'burning');
+  quan.setTable('T1', { dish: true }); quan.setTable('T3', { hl: 1 });
+}
+var t0 = performance.now(), last = t0, bench = Q.get('bench');
+function frame(now) {
+  var dt = (now - last) / 1000; last = now; stats.ts.push(now);
+  var el = (now - t0) / 1000;
+  if (view === 'gather' || view === 'fx') {
+    if (auto) { camD = (0.5 - 0.5 * Math.cos(el / 14 * Math.PI * 2)) * uw.maxCamDepthPx; camX = (0.5 - 0.5 * Math.cos(el / 30 * Math.PI * 2)) * 2200; }
+    uw.update(dt, camX, camD); sf.update(dt, camX, camD);
+    fishes.forEach(function (o) { o.x += o.v * dt; if (o.x > 4200) o.x = 0; if (o.x < 0) o.x = 4200; o.f.container.x = o.x - camX; o.f.container.y = uw.surfaceY + o.y - camD + Math.sin(el + o.x) * 4; o.f.update(dt); });
+    crocs.forEach(function (o, i) { o.m.container.x = o.x - camX + (i === 0 ? Math.sin(el * 0.4) * 90 : 0); o.m.container.y = uw.surfaceY + o.y - camD; o.m.setFacing(1); o.m.update(dt); });
+    crits.forEach(function (o) { if (o.v) { o.x += o.v * dt; if (Math.abs(o.x - o.x0) > 120) { o.v = -o.v; o.m.setFacing(o.v); } } o.m.container.x = o.x - camX; o.m.container.y = uw.surfaceY + o.y - camD + (o.m.kind === 'jellyfish' ? Math.sin(el * 0.8 + o.x) * 20 : 0); o.m.update(dt); });
+    nodes.forEach(function (o) { o.n.container.x = o.x; o.n.container.y = uw.surfaceY + 4; o.n.update(dt); /* surface.actors: toạ độ thế giới, tự theo camera */ });
+  } else if (view === 'gallery') { items.forEach(function (o) { o.update(dt); }); } else quan.update(dt);
+  fx.update(dt);
+  document.getElementById('hud').textContent = Q.has('nohud') ? '' : 'view=' + view + ' cam=' + camD.toFixed(0) + ' x=' + camX.toFixed(0);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+window.__ready = true;
+</script></body></html>
