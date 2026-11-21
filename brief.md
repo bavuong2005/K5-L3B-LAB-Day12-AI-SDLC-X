@@ -10,7 +10,7 @@
 | Vai | Người (theo commit — **(suy luận)**, mỗi người tự điền `TEAM.md`) | Module |
 |---|---|---|
 | TV1 | thanhanbk02 | `sim/gather` lát 1, Integrator (contract, tag) |
-| TV2 | Hải Đăng (`tangnguyenhaidang`) | `sim/gather` lát 2 |
+| TV2 | Tăng Nguyễn Hải Đăng (`haidangwork1411`) | `sim/gather` lát 2 |
 | TV3 | dqk2210 | `sim/quan` khách, giữ chỗ, uy tín |
 | TV4 | noobpyno (`mai-le-ba-vuong`) | `sim/quan` bếp, bưng, tiền, boa |
 | TV5 | (chưa rõ) | `qa`, QA lead |
@@ -32,7 +32,7 @@
 
 | Hạng mục | Tình trạng |
 |---|---|
-| Gather lát 1 + 2 | ✅ trên `main` (TV1 `4d2752c`, TV2 PR #2) |
+| Gather lát 1 + 2 | ✅ trên `main` (TV1 `4d2752c`, TV2 PR #2, #5) |
 | Quán | 🟡 QuanSim (PR #1) đã gộp nhưng **chưa nối vào `step`**; `dqk2210/quan-validate` (TV3) và `mai-le-ba-vuong` (TV4) **chưa gộp** |
 | Contract | 🔴 vẫn `"1.0"` → `--mode day` trả mã 2 "chờ TV1" |
 | Mode `day`, Shop, pause, live day (TV6) | ✅ `2fd94cf` (chạy được ngay khi contract lên v1.1) |
@@ -46,9 +46,9 @@
 - [x] T210/T211: dán JSON tuning v1.1 từ [`docs/research/phase-2.md`](docs/research/phase-2.md) vào `game.contract.json` (`contract_version:"1.1"`), cập nhật `contract.py`/`inventory.py` (thêm `ca_keo`, `keo_neo`, `fish_initial: 8`). **Việc này mở khóa mode `day`.**
 - [x] Lát 1: số chuẩn + cá bơi/sinh (`fish_speed`, `fish_spawn_ticks` 360, trần 12).
 
-### TV2 — Hải Đăng
-- [ ] Lát 2: Cá Sấu patrol/chase/recoil, hit, rơi LIFO `floor(n/2)`, bất tử 90 tick, ngất (`faint` có `cause:"monster"`, `lost`, `hp:0`).
-- [ ] T246: `GatherSim` nhận ngữ cảnh Ngày (`oxygen_max`, `hp_max` theo `active_upgrades`; M2 từ Ngày 3).
+### TV2 — haidangwork1411
+- [x] Lát 2: Cá Sấu patrol/chase/recoil, hit, rơi LIFO `floor(n/2)`, bất tử 90 tick, ngất (`faint` có `cause:"monster"`, `lost`, `hp:0`) (`561c1d9`, PR #7).
+- [x] T246: `GatherSim` nhận ngữ cảnh Ngày (`oxygen_max`, `hp_max` theo `active_upgrades`; M2 từ Ngày 3) (`561c1d9`, PR #7).
 - [ ] (sau lõi) mở rộng `snake`.
 
 ### TV3 — dqk2210
@@ -95,9 +95,9 @@
 - [x] T340: gather và quán đã bàn giao cá thể. `Session` truyền `contract_version` vào sim. File contract lên `"1.3"` (schema kho vẫn v1.2).
 
 ### TV2
-- [ ] Cá thể trong giỏ, id `I1, I2…` tăng xuyên pha/Ngày; hao từ bước sau khi lấy; `spoiled` đúng 1 lần theo id.
-- [ ] Rơi hàng/ngất theo LIFO cá thể; `lost` là mảng cá thể.
-- [ ] Xong khi: `{"gather":{"hold":[{"id":"I1","kind":"ca_linh","fresh":30}],"random_fish":false,"monsters":[]}}` chạy 1 bước → `spoiled` ở tick 1.
+- [x] Cá thể trong giỏ, id `I1, I2…` tăng xuyên pha/Ngày; hao từ bước sau khi lấy; `spoiled` đúng 1 lần theo id (`0d156f2`, `27e7f99`, PR #11).
+- [x] Rơi hàng/ngất theo LIFO cá thể; `lost` là mảng cá thể (`0d156f2`, `27e7f99`, PR #11).
+- [x] Xong khi: `{"gather":{"hold":[{"id":"I1","kind":"ca_linh","fresh":30}],"random_fish":false,"monsters":[]}}` chạy 1 bước → `spoiled` ở tick 1 (`test_gather_phase3_freshness.py`, PR #11).
 
 ### TV3
 - [ ] Giữ chỗ lấy cá thể tươi nhất (hòa theo id); `customers[].reserved` là mảng id.
@@ -137,7 +137,7 @@ Chi tiết task: [`specs/004-release/tasks.md`](specs/004-release/tasks.md) · P
 - [x] T451: tag `phase-1`…`phase-4` và Release [v1.0.0](https://github.com/bavuong2005/K5-L3B-LAB-Day12-AI-SDLC-X/releases/tag/v1.0.0) trên `89a035d`. Verification phase 2–4 vẫn của TV5.
 
 ### TV2 — hỗ trợ bench / mở rộng
-- [ ] Hỗ trợ TV5 dựng cảnh bench (gather + Cá Sấu + FX, player đứng yên ở bến) nếu cần.
+- [x] Hỗ trợ TV5 dựng cảnh bench (gather + Cá Sấu + FX, player đứng yên ở bến) — fixture & test T411 (`94e9739`, PR #9).
 - [ ] (sau lõi) T462: hoàn thiện mở rộng `snake` (hoặc mục đã chọn) + `extensions` + test.
 
 ### TV3 / TV4 — ổn định quán + mở rộng

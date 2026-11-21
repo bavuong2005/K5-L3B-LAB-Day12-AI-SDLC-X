@@ -5,7 +5,7 @@
 | Thành viên | GitHub handle | Module chính | Vai quy trình | Người dự phòng cho |
 |---|---|---|---|---|
 | Phạm Thanh An | thanhanbk02 | `sim/gather` (lát 1: oxy, ngạt, Máu, giỏ) | Integrator | TV2 |
-| Tăng Nguyễn Hải Đăng | dangtnh | `sim/gather` (lát 2: hái, bắt cá, bến, kho) | | TV1 |
+| Tăng Nguyễn Hải Đăng | haidangwork1411 | `sim/gather` (lát 2: P1 hái/bắt cá/bến/kho; P2 Cá Sấu T220–T223 & ngày T246; P3 giỏ cá thể/độ tươi T310–T312; P4 fixture bench T411) | | TV1 |
 | Đỗ Quốc Khánh | dqk2210 | `sim/quan` (khách, giữ chỗ, uy tín) | | TV4 |
 | Mai Lê Bá Vương | bavuong2005 | `sim/quan` (bếp, bưng, tiền, boa) | | TV3 |
 | Nguyễn Minh Phúc | NgMinPhuc | `qa` (test, verification, harness AI) | QA lead | TV6 |
