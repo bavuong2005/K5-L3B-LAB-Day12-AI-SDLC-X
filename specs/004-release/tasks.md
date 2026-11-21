@@ -35,7 +35,7 @@
 
 ## Phase 5 — Tag + Release (phút 25–30)
 - [x] T450 [release] (TV1 Integrator) Kiểm commit bàn giao trên `main`; viết release notes (điểm mới, cách chạy, giới hạn) — `docs/release-notes-v1.0.0.md`
-- [ ] T451 [release] (TV1) Gắn tag `phase-4` **và** GitHub Release `v1.0.0` cùng trỏ commit `main`; đính kèm bản đóng gói — **trước 3:00**
+- [x] T451 [release] (TV1) Gắn tag `phase-1`…`phase-4` và GitHub Release `v1.0.0` trên `89a035d`. Verification phase-4 vẫn của TV5.
 - [ ] T452 [P] [qa] (TV5) Xác nhận clone sạch / artifact Release chạy được; checklist DoD
 
 ## Phase 6 — Mở rộng (sau lõi, nếu còn giờ) — nhóm 6 cần ≥ 2 mục cả lab
