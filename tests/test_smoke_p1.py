@@ -198,7 +198,9 @@ class Movement(unittest.TestCase):
             self.assertEqual(end_ev[0]["data"]["reason"], "time")
             self.assertEqual(rows[-1]["reason"], "time")
             with open(inv, encoding="utf-8") as f:
-                self.assertEqual(json.load(f), {"items": {"ca_loc": 1}})
+                saved = json.load(f)
+            # Contract 1.3 ghi cá thể; một ca_loc trong giỏ vẫn là một món.
+            self.assertEqual([it["kind"] for it in saved["items"]], ["ca_loc"])
 
 
 class Integration(unittest.TestCase):
@@ -213,14 +215,23 @@ class Integration(unittest.TestCase):
             self.assertEqual(code, 0, err)
             with open(inv, encoding="utf-8") as f:
                 saved = json.load(f)
-            self.assertEqual(saved, {"items": {"bong_sung": 2, "ca_loc": 1}})
+            counts = {}
+            for it in saved["items"]:
+                counts[it["kind"]] = counts.get(it["kind"], 0) + 1
+            self.assertEqual(counts, {"bong_sung": 2, "ca_loc": 1})
             end = events(read_jsonl(w.path("r.jsonl")), "gather_end")[0]["data"]
             self.assertEqual(end["reason"], "docked")
-            self.assertEqual(end["inventory"], saved)
+            # JSONL làm tròn fresh 3 chữ số; file kho giữ đủ số. Cùng id và kind.
+            self.assertEqual([(it["id"], it["kind"]) for it in end["inventory"]["items"]],
+                             [(it["id"], it["kind"]) for it in saved["items"]])
             code, err = run_headless("--mode", "quan", "--seed", "42", "--ticks", "0", "--inventory", inv,
                                      "--out", w.path("q.jsonl"))
             self.assertEqual(code, 0, err)
-            self.assertEqual(snapshots(read_jsonl(w.path("q.jsonl")))[0]["stock"], {"bong_sung": 2, "ca_loc": 1})
+            stock = snapshots(read_jsonl(w.path("q.jsonl")))[0]["stock"]
+            stock_counts = {}
+            for it in stock:
+                stock_counts[it["kind"]] = stock_counts.get(it["kind"], 0) + 1
+            self.assertEqual(stock_counts, {"bong_sung": 2, "ca_loc": 1})
 
     def test_inv_01_not_written_when_tick_limit_first(self):
         with Workdir() as w:

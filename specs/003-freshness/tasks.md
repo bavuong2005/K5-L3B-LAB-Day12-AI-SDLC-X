@@ -44,7 +44,7 @@
 - [x] T336 [P] [US5] [client/ui] (TV6) Nhật ký sự kiện: `spoiled` (tiếng Việt), `cook_started.items`, giá chốt trên `paid`; `tests/test_live.py` giữ xanh
 
 ## Phase 6 — Bật v1.2, QA, release (phút 20 và 25–32)
-- [ ] T340 [adapter] (TV1) Đổi `contract_version:"1.2"` khi T301–T312, T320–T323 đã tích hợp
+- [x] T340 [adapter] (TV1) Đổi schema đang chạy sang kho cá thể. File contract lên `"1.3"` (Phase 4): gameplay vẫn v1.2, `uses_individuals` bật từ 1.2.
 - [ ] T341 [qa] (TV5) Phút 20: smoke bàn giao file của đề (fresh 100, interact frame 0, `quan --inventory --ticks 0`) → `docs/proof/phase-3/handoff.*` (AC-P3-18)
 - [ ] T342 [qa] (TV5) Smoke 2 tiến trình + `day`; regression P1–P2 còn hiệu lực (AC-P3-22); tất định `cmp` (AC-P3-23)
 - [ ] T343 [P] [qa] (TV5) `CHANGELOG.md`: breaking change kho cá thể, schema mới, cách cập nhật fixture (hold/stock/reserved/inventory); test đổi + lý do

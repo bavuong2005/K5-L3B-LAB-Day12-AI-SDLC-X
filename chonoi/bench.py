@@ -65,7 +65,8 @@ def measure(seed, duration_s, warmup_s=WARMUP_S, contract_path=None) -> dict:
     started = time.perf_counter()
     contract = load_contract(contract_path or DEFAULT_PATH)
     tuning = contract["tuning"]
-    sim = GatherSim(tuning, {}, Streams(seed), IdAllocator())
+    sim = GatherSim(tuning, {}, Streams(seed), IdAllocator(),
+                    contract_version=contract.get("contract_version"))
     sim.tuning_fresh = tuning.get("freshness")
     blank = bytes(WIDTH * HEIGHT)
     buf = bytearray(blank)

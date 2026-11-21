@@ -189,7 +189,7 @@ class RealContractSmokeTest(unittest.TestCase):
             self.assertEqual(run_headless("--mode", "gather", "--seed", "1", "--ticks", "30",
                                           "--out", g)[0], 0)
             q = w.path("q.jsonl")
-            inv = write_json(w.path("inv.json"), {"items": {"ca_loc": 1}})
+            inv = write_json(w.path("inv.json"), {"items": [{"id": "I1", "kind": "ca_loc", "fresh": 100}]})
             self.assertEqual(run_headless("--mode", "quan", "--seed", "1", "--ticks", "0",
                                           "--inventory", inv, "--out", q)[0], 0)
             d = w.path("d.jsonl")

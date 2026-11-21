@@ -13,8 +13,8 @@ Ghi **một lần** khi có `gather_end` (`--inventory-out`). Quán chỉ đọc
 - Đúng một khóa gốc `items`.
 - Khóa là id nguyên liệu: `ca_loc`, `ca_linh`, `ca_keo`, `bong_dien_dien`, `bong_sung`, `keo_neo` (hai id cuối là v1.1).
 - Giá trị là số nguyên `>= 0`. Mục bằng 0 bị bỏ khi ghi. Số âm hoặc id lạ thì thoát mã 2.
-- Mẫu hợp lệ: `inventory.sample.json`.
-- Giỏ trong sim là mảng thứ tự nhặt (`hold`, phần tử cuối là mới nhất). File kho là bản đếm, không giữ thứ tự.
+- Mẫu đang chạy (contract 1.3, kho cá thể): `inventory.sample.json`. Bản đếm ở trên chỉ còn cho contract trước 1.2.
+- Giỏ trong sim là mảng thứ tự nhặt (`hold`, phần tử cuối là mới nhất). Từ 1.2 mỗi phần tử là `{id, kind, fresh}`.
 
 ## 2. Giao diện sim ↔ UI
 
@@ -72,7 +72,7 @@ Sự kiện quán (khách, bếp, tiền) do TV3/TV4 điền khi viết `quan.py
 
 Cá bơi 1.5 m/s trong `fish_x` × `fish_depths[loài]`. Đổi hướng khi `age_ticks` đã là bội của 120, trước khi nhích. Chạm mép thì phản xạ phần dư và đảo thành phần vuông góc; chạm góc đảo cả hai. Cá mới có `age_ticks` 0 và bơi từ bước sau.
 
-## 5. Kho cá thể v1.2 (Phase 3, TV1) — đã có hàm, chưa bật trên file đang chạy
+## 5. Kho cá thể v1.2 (Phase 3, TV1) — đang chạy trên contract 1.3
 
 `chonoi/inventory.py` chọn schema theo `contract_version`:
 
@@ -84,4 +84,4 @@ Từ `"1.2"` (và `"1.3"`, gameplay vẫn theo v1.2): `items` phải là mảng.
 
 Độ tươi nội bộ: 240 đơn vị mỗi điểm. Giỏ trừ 2 đơn vị/tick, quán trừ 1. Ươn khi đơn vị xuống dưới `30 × 240`. `tuning.freshness` trên contract hiện tại là `{initial:100, gather_decay_per_s:0.5, quan_decay_per_s:0.25, spoiled_below:30}`.
 
-`game.contract.json` vẫn `"1.1"` cho đến khi giỏ (TV2) và quán (TV3/TV4) bàn giao cá thể. Bật sớm thì mọi file kho đếm đang dùng trong test P1–P2 thành mã 2.
+`game.contract.json` là `"1.3"`. Gameplay và schema kho theo v1.2 (cá thể). File kho đếm đưa vào headless/live trả mã 2. Contract 1.0/1.1 vẫn đọc kho đếm khi trỏ `CHONOI_CONTRACT` vào fixture cũ.

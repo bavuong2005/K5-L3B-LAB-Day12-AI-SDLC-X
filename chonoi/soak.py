@@ -40,7 +40,8 @@ def run_soak(seed, days, contract_path=None) -> dict:
         raise BadInput(f"soak: contract chưa có khóa {', '.join(miss)}")
     if isinstance(days, bool) or not isinstance(days, int) or days < 1:
         raise BadInput("--days phải là số nguyên >= 1")
-    sim = DaySim(tuning, {}, Streams(seed), IdAllocator(), days=days)
+    sim = DaySim(tuning, {}, Streams(seed), IdAllocator(), days=days,
+                 version=contract.get("contract_version"))
     mult = tuning["score"]["reputation_multiplier"]
     results = []
     crashes = 0

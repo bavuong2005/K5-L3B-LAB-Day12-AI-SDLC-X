@@ -143,6 +143,19 @@ class QuanSim:
 
     # Vòng tick chọn bếp/bàn và đơn hợp lệ trước khi gọi các hàm này.
     # Mỗi thao tác trả (tên sự kiện, dữ liệu) hoặc None nếu không thực hiện được.
+    def _locked_base_price(self, customer):
+        """Kho cá thể: floor(giá niêm yết × fresh trung bình / 100). Kho đếm: None → giá menu."""
+        if not self._item_mode or not self.freshness:
+            return None
+        info = self.menu.get(customer["dish_id"])
+        if not info:
+            return None
+        items = self._reserved_ingredients(customer, info["recipe"])
+        if not items:
+            return None
+        total = sum(self._units[item["id"]] for item in items)
+        return int(info["price"]) * total // (len(items) * self.FRESH_SCALE * 100)
+
     def start_cooking(self, stove, customer, *, base_price=None):
         """Nấu đơn reserved do vòng tick chọn theo order_tick rồi ID bàn.
 
@@ -275,7 +288,7 @@ class QuanSim:
             customer = min(orders, key=lambda c: (c["order_tick"], id_key(c["table_id"])), default=None)
             if customer is None:
                 return None
-            event = self.start_cooking(target, customer)
+            event = self.start_cooking(target, customer, base_price=self._locked_base_price(customer))
             if event:
                 customer.update(order_status="assigned", reserved=[] if isinstance(self.stock, list) else {})
             return event

@@ -159,7 +159,7 @@ class ChokeHp(unittest.TestCase):
         self.assertEqual(len(end), 1)
         # Giả định: lý do kết thúc là "fainted" và mất toàn bộ giỏ (theo TODO trong khung gather.py).
         self.assertEqual(end[0]["data"]["reason"], "fainted")
-        self.assertEqual(end[0]["data"]["inventory"], {"items": {}})
+        self.assertEqual(end[0]["data"]["inventory"], {"items": []})
         self.assertEqual(rows[-1]["reason"], "fainted")
 
 
@@ -378,7 +378,9 @@ class Determinism(unittest.TestCase):
         with open(SAMPLE_INV, encoding="utf-8") as f:
             items = json.load(f)["items"]
         rows = run(self, "quan", 1, 0, inventory=SAMPLE_INV)
-        self.assertEqual(snapshots(rows)[0]["stock"], {k: v for k, v in items.items() if v > 0})
+        stock = snapshots(rows)[0]["stock"]
+        self.assertEqual([it["id"] for it in stock], [it["id"] for it in items])
+        self.assertEqual([it["kind"] for it in stock], [it["kind"] for it in items])
 
 
 if __name__ == "__main__":

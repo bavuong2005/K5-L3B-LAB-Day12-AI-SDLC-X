@@ -26,12 +26,13 @@ from .sim.gather import GatherSim
 from .sim.quan import QuanSim
 
 
-def build_sim(mode, tuning, scenario, seed, inventory, days=1):
+def build_sim(mode, tuning, scenario, seed, inventory, days=1, contract_version=None):
+    """`contract_version` None = sim tự suy (giữ test gọi thẳng). Session luôn truyền version của contract."""
     streams, ids = Streams(seed), IdAllocator()
     if mode == "gather":
-        return GatherSim(tuning, scenario, streams, ids)
+        return GatherSim(tuning, scenario, streams, ids, contract_version=contract_version)
     if mode == "day":
-        return DaySim(tuning, scenario, streams, ids, days=days)
+        return DaySim(tuning, scenario, streams, ids, days=days, version=contract_version)
     return QuanSim(tuning, scenario, streams, ids, inventory=inventory)
 
 
@@ -46,7 +47,7 @@ class Session:
         self.mode = mode
         self.tuning = tuning
         self.contract_version = contract_version
-        self.sim = build_sim(mode, tuning, scenario, seed, inventory, days)
+        self.sim = build_sim(mode, tuning, scenario, seed, inventory, days, contract_version)
         self.tick = 0
         self.sim_tick = 0
         self.phase_tick = 0

@@ -186,8 +186,8 @@ class DaySim:
     def _gather_scenario_for_day(self):
         """Mẫu gather của Ngày hiện tại. v1.2: Ngày 1 giữ id mẫu; Ngày kế cấp id mới (T331).
 
-        `runner` (TV1) chưa truyền `contract_version` vào DaySim → suy từ hình dạng `hold` cá thể
-        (cùng tín hiệu `GatherSim.should_use_freshness` khi không có version).
+        `version` None (gọi DaySim thẳng, không qua runner) thì suy từ hình dạng `hold` cá thể.
+        Session/headless/soak truyền `contract_version` của file contract.
         """
         sc = copy.deepcopy(self.tpl_gather)
         hold = sc.get("hold")
@@ -207,7 +207,7 @@ class DaySim:
 
     def _build_gather(self):
         t = self._gather_tuning()
-        # Chỉ truyền contract_version khi có (runner TV1 chưa nối DaySim). Không truyền item_ids —
+        # Chỉ truyền contract_version khi runner đã có (None = gọi thẳng, suy từ hold). Không truyền item_ids —
         # `should_use_freshness(..., item_ids=...)` sẽ ép v1.2 cả khi hold còn dạng đếm.
         cand = {"day": self.day, "active_upgrades": dict(self.state.active_upgrades)}
         if self.version is not None:

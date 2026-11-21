@@ -25,6 +25,23 @@ def _tuning_gather():
         return json.load(f)["tuning"]["gather"]
 
 
+def hold_kinds(hold):
+    """Contract 1.3: giỏ headless là cá thể {id, kind, fresh}. So thứ tự kind, số lượng vẫn theo luật P1."""
+    if hold and isinstance(hold[0], dict):
+        return [h["kind"] for h in hold]
+    return list(hold)
+
+
+def item_counts(items):
+    """Kho đếm {kind: n} hoặc mảng cá thể → số lượng theo kind."""
+    if isinstance(items, dict):
+        return {k: v for k, v in items.items() if v}
+    counts = {}
+    for it in items:
+        counts[it["kind"]] = counts.get(it["kind"], 0) + 1
+    return counts
+
+
 class GatherSlice2PlantTests(unittest.TestCase):
     def test_harvest_at_surface_sets_regrow_and_regrows(self):
         g = _tuning_gather()
@@ -54,11 +71,11 @@ class GatherSlice2PlantTests(unittest.TestCase):
                 "amount": g["node_yield"],
             })
             snaps = {s["tick"]: s for s in snapshots(rows)}
-            self.assertEqual(snaps[1]["hold"], ["bong_dien_dien"] * g["node_yield"])
+            self.assertEqual(hold_kinds(snaps[1]["hold"]), ["bong_dien_dien"] * g["node_yield"])
             self.assertFalse(snaps[1]["nodes"][0]["ready"])
             self.assertEqual(snaps[1]["nodes"][0]["regrow_ticks"], regrow_ticks)
             # Nút chưa mọc lại nên lần interact ở tick 2 không thay đổi giỏ
-            self.assertEqual(snaps[3]["hold"], ["bong_dien_dien"] * g["node_yield"])
+            self.assertEqual(hold_kinds(snaps[3]["hold"]), ["bong_dien_dien"] * g["node_yield"])
 
         # Kiểm tra nút mọc lại sau regrow_ticks rồi hái lại được
         with Workdir() as w:
@@ -84,7 +101,7 @@ class GatherSlice2PlantTests(unittest.TestCase):
             gather_evs = events(rows, "gather")
             self.assertEqual(len(gather_evs), 1)
             self.assertEqual(gather_evs[0]["tick"], 3)
-            self.assertEqual(snapshots(rows)[-1]["hold"], ["bong_sung"] * g["node_yield"])
+            self.assertEqual(hold_kinds(snapshots(rows)[-1]["hold"]), ["bong_sung"] * g["node_yield"])
 
     def test_harvest_blocked_underwater_and_out_of_radius(self):
         g = _tuning_gather()
@@ -193,14 +210,14 @@ class GatherSlice2FishTests(unittest.TestCase):
 
             snaps = {s["tick"]: s for s in snapshots(rows)}
             self.assertEqual(snaps[1]["player"]["catch_cd_ticks"], cd_ticks)
-            self.assertEqual(snaps[1]["hold"], ["ca_linh"] * g["fish_yield"]["ca_linh"])
+            self.assertEqual(hold_kinds(snaps[1]["hold"]), ["ca_linh"] * g["fish_yield"]["ca_linh"])
             self.assertEqual([f["id"] for f in snaps[1]["fish"]], ["F2"])
             # Ở tick 3 (sau lần bấm hụt vì cooldown ở tick 2), F2 vẫn còn
             self.assertEqual([f["id"] for f in snaps[3]["fish"]], ["F2"])
             # Sau khi hết cooldown ở tick cd_ticks + 1, F2 đã được bắt
             self.assertEqual(snaps[cd_ticks + 1]["fish"], [])
             expected_hold = ["ca_linh"] * g["fish_yield"]["ca_linh"] + ["ca_loc"] * g["fish_yield"]["ca_loc"]
-            self.assertEqual(snaps[cd_ticks + 1]["hold"], expected_hold)
+            self.assertEqual(hold_kinds(snaps[cd_ticks + 1]["hold"]), expected_hold)
 
     def test_catch_blocked_at_surface_and_out_of_radius(self):
         g = _tuning_gather()
@@ -325,7 +342,8 @@ class GatherSlice2CapacityDockAndInventoryTests(unittest.TestCase):
             self.assertEqual(len(end_evs), 1)
             self.assertEqual(end_evs[0]["data"]["reason"], "docked")
             with open(inv, encoding="utf-8") as f:
-                self.assertEqual(json.load(f), {"items": {"ca_loc": 1}})
+                saved = json.load(f)
+            self.assertEqual(item_counts(saved["items"]), {"ca_loc": 1})
 
     def test_harvest_catch_dock_handoff_to_quan_and_deterministic_bytes(self):
         g = _tuning_gather()
@@ -361,13 +379,14 @@ class GatherSlice2CapacityDockAndInventoryTests(unittest.TestCase):
                 "ca_linh": g["fish_yield"]["ca_linh"],
             }
             with open(inv1, encoding="utf-8") as f:
-                self.assertEqual(json.load(f), {"items": expected_items})
+                saved = json.load(f)
+            self.assertEqual(item_counts(saved["items"]), expected_items)
 
-            # Bàn giao sang chế độ quan
+            # Bàn giao sang chế độ quan: cùng các cá thể vừa ghi
             code, err = run_headless("--mode", "quan", "--seed", "7", "--ticks", "0",
                                      "--inventory", inv1, "--out", w.path("q.jsonl"))
             self.assertEqual(code, 0, err)
-            self.assertEqual(snapshots(read_jsonl(w.path("q.jsonl")))[0]["stock"], expected_items)
+            self.assertEqual(item_counts(snapshots(read_jsonl(w.path("q.jsonl")))[0]["stock"]), expected_items)
 
 
 class GatherSlice1And2IntegrationTests(unittest.TestCase):
@@ -510,17 +529,17 @@ class GatherSlice1And2IntegrationTests(unittest.TestCase):
             self.assertEqual(len(events(rows, "faint")), 1)
             end_evs = events(rows, "gather_end")
             self.assertEqual(len(end_evs), 1)
-            self.assertEqual(end_evs[0]["data"], {"reason": "fainted", "inventory": {"items": {}}})
+            self.assertEqual(end_evs[0]["data"], {"reason": "fainted", "inventory": {"items": []}})
             self.assertEqual(rows[-1]["reason"], "fainted")
             self.assertEqual(snapshots(rows)[-1]["hold"], [])
             with open(inv1, encoding="utf-8") as f:
-                self.assertEqual(json.load(f), {"items": {}})
+                self.assertEqual(json.load(f), {"items": []})
 
-            # Quán nạp kho rỗng sau khi ngất
+            # Quán nạp kho rỗng sau khi ngất (mảng cá thể rỗng)
             code, err = run_headless("--mode", "quan", "--seed", "11", "--ticks", "0",
                                      "--inventory", inv1, "--out", w.path("q.jsonl"))
             self.assertEqual(code, 0, err)
-            self.assertEqual(snapshots(read_jsonl(w.path("q.jsonl")))[0]["stock"], {})
+            self.assertEqual(snapshots(read_jsonl(w.path("q.jsonl")))[0]["stock"], [])
 
     def test_same_tick_faint_blocks_dock_and_catch(self):
         g = _tuning_gather()
@@ -541,10 +560,10 @@ class GatherSlice1And2IntegrationTests(unittest.TestCase):
             self.assertEqual(code, 0, err)
             rows_dock = read_jsonl(w.path("o_dock.jsonl"))
             self.assertEqual([e["name"] for e in events(rows_dock)], ["choke", "faint", "gather_end"])
-            self.assertEqual(events(rows_dock, "gather_end")[0]["data"], {"reason": "fainted", "inventory": {"items": {}}})
+            self.assertEqual(events(rows_dock, "gather_end")[0]["data"], {"reason": "fainted", "inventory": {"items": []}})
             self.assertEqual(snapshots(rows_dock)[-1]["hold"], [])
             with open(inv_dock, encoding="utf-8") as f:
-                self.assertEqual(json.load(f), {"items": {}})
+                self.assertEqual(json.load(f), {"items": []})
 
             # Cùng tick vừa ngất vừa bấm catch cạnh cá -> faint thắng, không fish_caught, cá còn nguyên
             sc_catch = write_json(w.path("sc_catch.json"), {"gather": {
@@ -565,7 +584,7 @@ class GatherSlice1And2IntegrationTests(unittest.TestCase):
             self.assertEqual(last_snap["hold"], [])
             self.assertEqual([f["id"] for f in last_snap["fish"]], ["F1"])
             with open(inv_catch, encoding="utf-8") as f:
-                self.assertEqual(json.load(f), {"items": {}})
+                self.assertEqual(json.load(f), {"items": []})
 
     def test_day_mode_gather_events_and_quan_handoff(self):
         """Kiểm tra tương thích luồng `--mode day` v1.1 với sự kiện PRD-0 v1.0 và bàn giao sang Quán."""

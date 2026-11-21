@@ -11,7 +11,7 @@
 - [x] T400 [release] (TV6) Chốt phân công P4 trên kênh nhóm (Đóng gói / Bench-QA / Release-Integrator / Điều phối retro); cập nhật standup 1 dòng — `docs/standup.md`
 
 ## Phase 1 — Contract v1.3 + bench (phút 0–15) — song song
-- [ ] T410 [US1] [bench] (TV1) `game.contract.json`: `contract_version:"1.3"`, khai `bench_cmd` + `soak_cmd` ở gốc; gameplay/tuning/kho/JSONL giữ v1.2 — `game.contract.json`, `chonoi/contract.py` nếu cần validate
+- [x] T410 [US1] [bench] (TV1) `game.contract.json`: `contract_version:"1.3"`, khai `bench_cmd` + `soak_cmd` ở gốc; gameplay/tuning/kho/JSONL giữ v1.2 — `game.contract.json`, `chonoi/contract.py` nếu cần validate
 - [ ] T411 [US1] [bench] (TV5 + TV2 hỗ trợ) Implement/runner `<bench_cmd> --seed <int> --duration <s> --out <bench.json>`: cảnh gather lõi (độ tươi, cá bơi, Cá Sấu, FX mặc định), Út Sen đứng yên ở bến, cửa sổ 1280×720, warm-up 3 s rồi đo 30 s; xuất đủ 5 trường `avg_fps`, `p1_low_fps`, `frames`, `measured_s`, `load_ms`
 - [ ] T412 [P] [US1] [qa] (TV5) Chạy bench seed 42 → lưu `docs/proof/phase-4/bench.json` (+ log); ghi AC-P4-bench trong verification
 - [x] T413 [P] [US1] [client/ui] (TV6) Cảnh báo chữ/biểu tượng: thủy quái gần, oxy sắp hết, khách sắp giận; thêm chế độ tương phản cao; chơi thử 3 cảnh báo — `chonoi/web/index.html`
@@ -25,7 +25,7 @@
 ## Phase 3 — Verification + CHANGELOG (phút 15–25)
 - [ ] T430 [qa] (TV5) Regression P1–P3 còn hiệu lực; lưu bằng chứng `docs/proof/phase-4/`
 - [ ] T431 [qa] (TV5) `docs/verification/phase-4.md`: ma trận `AC-P4-xx → bằng chứng → kết quả` trên commit bàn giao
-- [ ] T432 [P] [release] (TV1) `CHANGELOG.md` theo từng phase; rà `CREDITS.md` + `LICENSE`
+- [x] T432 [P] [release] (TV1) `CHANGELOG.md` theo từng phase; rà `CREDITS.md` + `LICENSE` (starter không có LICENSE, không thêm file giả)
 - [x] T433 [P] [release] (TV6) Cập nhật `docs/clarify.md`, `docs/ai-usage-log.md` (P4)
 
 ## Phase 4 — Retro + members (phút 15–25)
@@ -34,7 +34,7 @@
 - [ ] T442 [P] [qa] (TV5) Standup phút 20: rà vướng, điều người xong sang hỗ trợ — `docs/standup.md`
 
 ## Phase 5 — Tag + Release (phút 25–30)
-- [ ] T450 [release] (TV1 Integrator) Kiểm commit bàn giao trên `main`; viết release notes (điểm mới, cách chạy, giới hạn)
+- [x] T450 [release] (TV1 Integrator) Kiểm commit bàn giao trên `main`; viết release notes (điểm mới, cách chạy, giới hạn) — `docs/release-notes-v1.0.0.md`
 - [ ] T451 [release] (TV1) Gắn tag `phase-4` **và** GitHub Release `v1.0.0` cùng trỏ commit `main`; đính kèm bản đóng gói — **trước 3:00**
 - [ ] T452 [P] [qa] (TV5) Xác nhận clone sạch / artifact Release chạy được; checklist DoD
 

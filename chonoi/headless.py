@@ -77,7 +77,7 @@ def main(argv=None) -> int:
             if miss:
                 raise BadInput(f"--mode day: contract chưa có khóa {', '.join(miss)} (chờ TV1)")
         buttons, strings = buttons_for(contract)
-        scenario = load_scenario(a.scenario, a.mode, tuning)
+        scenario = load_scenario(a.scenario, a.mode, tuning, contract["contract_version"])
         frames = load_frames(a.inputs, buttons, strings)
         inventory = read_inventory(a.inventory, version=contract["contract_version"]) if a.inventory else None
         if inventory is not None and "stock" in scenario:

@@ -279,7 +279,7 @@ def main(argv=None) -> int:
         tuning = contract["tuning"]
         if a.mode == "day" and missing_day_keys(tuning):
             raise BadInput(f"--mode day: contract chưa có khóa {', '.join(missing_day_keys(tuning))} (chờ TV1)")
-        scenario = load_scenario(a.scenario, a.mode, tuning)
+        scenario = load_scenario(a.scenario, a.mode, tuning, contract["contract_version"])
         inventory = read_inventory(a.inventory, version=contract["contract_version"]) if a.inventory else None
         if inventory is not None and "stock" in scenario:
             raise BadInput("vừa có quan.stock vừa có --inventory")

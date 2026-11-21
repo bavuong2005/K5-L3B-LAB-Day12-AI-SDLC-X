@@ -3,12 +3,14 @@
 ## Unreleased
 
 ### Phase 4
-- Khai `bench_cmd` (`python3 -m chonoi.bench`) và `soak_cmd` (`python3 -m chonoi.soak`) ở gốc `game.contract.json`.
-- `contract_version` giữ `"1.1"`. Bản `"1.3"` chỉ bật khi kho cá thể đã là schema đang chạy (gameplay vẫn theo v1.2). Gắn tag và Release chờ TV5 báo regression xanh.
+- `contract_version` là `"1.3"`. Gameplay và schema kho giữ v1.2 (cá thể). `bench_cmd` và `soak_cmd` đọc version này.
+- File kho đếm đưa vào headless/live trả mã 2. Mẫu đang chạy: `docs/contracts/inventory.sample.json`.
 
 ### Phase 3
-- **Breaking change (chưa bật):** từ `contract_version` `"1.2"`, file kho đếm `{"items":{kind:n}}` trả mã 2. Schema mới là `{"items":[{"id","kind","fresh"}]}`.
-- `chonoi/inventory.py` đọc/ghi cả hai schema theo version. Fixture cũ cập nhật bằng cách đổi mỗi món đếm thành một cá thể `fresh: 100` (hoặc giá trị scenario), id `I1`, `I2`, … không trùng.
+- **Breaking change (đã bật):** từ `"1.2"` (và `"1.3"`), file kho là `{"items":[{"id","kind","fresh"}]}`. Kho đếm trả mã 2.
+- `Session` / headless / live / soak / bench truyền `contract_version` vào GatherSim và DaySim, nên giỏ và bàn giao quán đi theo schema của file contract.
+- Quán bắt đầu nấu kho cá thể thì truyền `base_price = floor(giá × fresh trung bình / 100)`. Trước đó `step` gọi `start_cooking` không kèm giá nên món không bao giờ vào bếp.
+- Fixture cũ: mỗi món đếm thành một cá thể `fresh: 100`, id `I1`, `I2`, … không trùng. Contract 1.0/1.1 (fixture `CHONOI_CONTRACT`) vẫn dùng kho đếm.
 - `tuning.freshness`: initial 100, giỏ −0.5/s, quán −0.25/s, ươn khi fresh < 30. Nội bộ 240 đơn vị/điểm.
 
 ### Phase 2
