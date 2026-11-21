@@ -21,4 +21,4 @@ WASD di chuyển, E tương tác, Space bắt cá, Esc hoặc P tạm dừng, R 
 ## Giới hạn đã biết
 - File kho đếm (`{"items": {kind: số}}`) trả mã 2. Dùng mảng cá thể, mẫu ở `docs/contracts/inventory.sample.json`.
 - `docs/verification` mới có phase 1. Phase 2–4 vẫn là việc của TV5.
-- `extensions` vẫn rỗng. Repo starter không có `LICENSE`. Không có asset ngoài.
+- Mở rộng đã khai: `burn` (TV4). Repo starter không có `LICENSE`. Không có asset ngoài.

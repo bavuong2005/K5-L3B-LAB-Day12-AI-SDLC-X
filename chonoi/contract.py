@@ -23,7 +23,7 @@ def load_contract(path=DEFAULT_PATH) -> dict:
             c = json.load(f)
     except (OSError, ValueError) as e:
         raise BadInput(f"không đọc được {path}: {e}")
-    validate_tuning(c.get("tuning"))
+    validate_tuning(c.get("tuning"), burn_enabled="burn" in c.get("extensions", []))
     return c
 
 
@@ -185,7 +185,7 @@ def _validate_freshness(t):
             raise BadInput(f"tuning.freshness.{key} × 240 / tick_hz phải là số nguyên")
 
 
-def validate_tuning(t):
+def validate_tuning(t, *, burn_enabled=False):
     if not isinstance(t, dict):
         raise BadInput("thiếu khối tuning")
     g, q, menu = t.get("gather"), t.get("quan"), t.get("menu")
@@ -210,7 +210,9 @@ def validate_tuning(t):
         raise BadInput("quan.tip_min_patience_ratio phải thuộc (0, 1]")
     if not (_num(q.get("tip_reputation")) and q["tip_reputation"] > 0):
         raise BadInput("quan.tip_reputation phải > 0")
-    if q.get("burn_s") is not None:
+    if burn_enabled:
+        _between("quan.burn_s", q.get("burn_s"), 20, 20)
+    elif q.get("burn_s") is not None:
         raise BadInput("burn_s phải là null ở lõi (cháy món là mở rộng)")
     if isinstance(g.get("fish_initial"), int):
         _validate_day_and_shop(t, menu)

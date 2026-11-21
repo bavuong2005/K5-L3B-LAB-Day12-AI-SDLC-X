@@ -9,7 +9,7 @@
 ### Phase 3
 - **Breaking change (đã bật):** từ `"1.2"` (và `"1.3"`), file kho là `{"items":[{"id","kind","fresh"}]}`. Kho đếm trả mã 2.
 - `Session` / headless / live / soak / bench truyền `contract_version` vào GatherSim và DaySim, nên giỏ và bàn giao quán đi theo schema của file contract.
-- Quán bắt đầu nấu kho cá thể thì truyền `base_price = floor(giá × fresh trung bình / 100)`. Trước đó `step` gọi `start_cooking` không kèm giá nên món không bao giờ vào bếp.
+- Giá lúc nấu kho cá thể do `start_cooking` của TV4 chốt (`floor(giá × fresh trung bình / 100)`). Mở rộng `burn` của TV4 nằm trong `extensions`.
 - Fixture cũ: mỗi món đếm thành một cá thể `fresh: 100`, id `I1`, `I2`, … không trùng. Contract 1.0/1.1 (fixture `CHONOI_CONTRACT`) vẫn dùng kho đếm.
 - `tuning.freshness`: initial 100, giỏ −0.5/s, quán −0.25/s, ươn khi fresh < 30. Nội bộ 240 đơn vị/điểm.
 

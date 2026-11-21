@@ -72,6 +72,53 @@ def waiting(cid, table, dish="ca_loc_nuong_trui", patience=60, reserved=None):
     return c
 
 
+class CookingWithFreshStock(unittest.TestCase):
+    def test_burn_boundary_and_re_reservation(self):
+        tuning = v12_tuning()
+        tuning["quan"]["burn_s"] = 20
+        interact = InputState((0, 0), frozenset(), frozenset({"interact"}))
+        for stock, reserved, expected in (
+            (items(("I1", "ca_loc", 100)), ["I1"], "reserved"),
+            ([], [], "unfulfillable"),
+        ):
+            customer = waiting("C1", "T1", patience=1000, reserved=[])
+            customer["order_status"] = "assigned"
+            sim = make_sim({"customers": [customer], "random_customers": False},
+                           stock=stock, tuning=tuning)
+            stove = sim.stoves[0]
+            dish = {"order_id": "C1", "dish_id": customer["dish_id"], "base_price": 60}
+            stove.update(state="ready", dish=dish, ready_ticks=1199)
+            sim.pos = list(stove["pos"])
+            picked, = by_name(sim.step(interact), "dish_picked")
+            self.assertEqual(picked["order_id"], "C1")
+            sim.hand = None
+            stove.update(state="ready", dish=dish, ready_ticks=1200)
+            burnt, = by_name(sim.step(IDLE), "dish_burnt")
+            self.assertEqual(burnt["order_status"], expected)
+            self.assertEqual(stove["state"], "idle")
+            self.assertEqual(sim.customers[0]["reserved"], reserved)
+
+    def test_reserved_item_sets_price_through_payment(self):
+        sim = make_sim({"random_customers": False,
+                        "customers": [waiting("C1", "T1", patience=1000, reserved=["I2"])]},
+                       stock=items(("I1", "ca_loc", 100), ("I2", "ca_loc", 50)))
+        interact = InputState((0, 0), frozenset(), frozenset({"interact"}))
+        sim.pos = list(sim.stoves[0]["pos"])
+        started, = by_name(sim.step(interact), "cook_started")
+        self.assertEqual([entry["id"] for entry in started["items"]], ["I2"])
+        self.assertEqual([entry["id"] for entry in sim.stock], ["I1"])
+        # Tick tương tác làm hao một đơn vị trước khi chốt giá: floor(60 * (50 - 1/240) / 100).
+        self.assertEqual(started["base_price"], 29)
+        run_steps(sim, sim.stoves[0]["cook_ticks_left"])
+        picked, = by_name(sim.step(interact), "dish_picked")
+        self.assertEqual(picked["base_price"], 29)
+        sim.pos = list(sim.tables[0]["pos"])
+        served, = by_name(sim.step(interact), "served")
+        self.assertEqual(served["base_price"], 29)
+        paid, = by_name(run_steps(sim, sim.customers[0]["eat_ticks_left"]), "paid")
+        self.assertEqual((paid["base_price"], paid["tip"], sim.money), (29, 0, 29))
+
+
 class DecayAndSpoiled(unittest.TestCase):
     """Kho quán hao 0.25/s kể cả hàng đang giữ; spoiled đúng 1 lần, theo id."""
 

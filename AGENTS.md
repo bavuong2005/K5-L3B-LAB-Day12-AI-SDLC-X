@@ -33,6 +33,7 @@
   mâu thuẫn -> mã 2). Kho đếm v1.0/v1.1 ở mode quan vẫn hợp lệ.
 
 ## Nên tránh
+- **Mở rộng cháy món (TV4, T462):** `contract.py` cho phép `quan.burn_s: 20` khi manifest khai `burn`. Lõi vẫn yêu cầu `burn_s: null`.
 - Không sửa `docs/contracts/`, `game.contract.json` (khóa contract) hoặc schema kho khi chưa báo cả nhóm (đổi hợp đồng ảnh hưởng mọi module).
 - Không làm hỏng nhánh chính: trước khi đẩy, chạy test.
 - Không bịa yêu cầu: chỗ mơ hồ thì ghi `docs/clarify.md` và hỏi PO.

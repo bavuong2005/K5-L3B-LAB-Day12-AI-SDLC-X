@@ -38,6 +38,8 @@ Game cần chế độ **headless** theo Test Contract (`python3 -m chonoi.headl
 
 ## Tự do sáng tạo
 
+Nhóm đã thêm **cháy món** (`burn`). Món để trên bếp quá 20 giây sẽ cháy. Quán thử giữ nguyên liệu mới cho đơn. Xem [kiểm chứng cháy món](docs/proof/phase-4/tv4-burn-2111.md).
+
 Ngoài phần đề yêu cầu, nhóm được **thêm** nhân vật, loài cá/cây, sinh vật, món, bản đồ, cơ chế, câu chuyện, đồ họa, âm nhạc… với ba điều kiện: **không phá phần cố định** (tắt ở headless), ghi mục **"Sáng tạo của nhóm"** trong README của nhóm, và **làm lõi đúng trước**.
 
 ## Lịch 3 giờ

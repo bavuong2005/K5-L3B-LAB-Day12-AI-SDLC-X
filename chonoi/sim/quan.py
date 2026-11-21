@@ -31,6 +31,8 @@ class QuanSim:
     def __init__(self, tuning, scenario, streams, ids, inventory=None, plan_dishes=None):
         t = tuning["quan"]
         self.t = t
+        burn_s = t.get("burn_s")
+        self.burn_ticks = None if burn_s is None else round(burn_s * TICK)
         self.menu = tuning["menu"]
         self.freshness = tuning.get("freshness")
         self.plan_dishes = set(plan_dishes) if plan_dishes is not None else None
@@ -143,25 +145,12 @@ class QuanSim:
 
     # Vòng tick chọn bếp/bàn và đơn hợp lệ trước khi gọi các hàm này.
     # Mỗi thao tác trả (tên sự kiện, dữ liệu) hoặc None nếu không thực hiện được.
-    def _locked_base_price(self, customer):
-        """Kho cá thể: floor(giá niêm yết × fresh trung bình / 100). Kho đếm: None → giá menu."""
-        if not self._item_mode or not self.freshness:
-            return None
-        info = self.menu.get(customer["dish_id"])
-        if not info:
-            return None
-        items = self._reserved_ingredients(customer, info["recipe"])
-        if not items:
-            return None
-        total = sum(self._units[item["id"]] for item in items)
-        return int(info["price"]) * total // (len(items) * self.FRESH_SCALE * 100)
-
-    def start_cooking(self, stove, customer, *, base_price=None):
+    def start_cooking(self, stove, customer):
         """Nấu đơn reserved do vòng tick chọn theo order_tick rồi ID bàn.
 
         Bên gọi cập nhật trạng thái đơn và giải phóng phần giữ chỗ sau
         cook_started. Hàm này trừ kho thực đúng lúc món bắt đầu nấu.
-        Với kho cá thể, bên gọi tính base_price theo các nguyên liệu đã giữ.
+        Với kho cá thể, giá được chốt theo độ tươi lúc nấu.
         """
         dish_id = customer["dish_id"]
         recipe = self.menu.get(dish_id)
@@ -169,17 +158,16 @@ class QuanSim:
             return None
         ingredients = recipe["recipe"]
         dish = {"dish_id": dish_id, "order_id": customer["id"],
-                "base_price": recipe["price"] if base_price is None else base_price}
+                "base_price": recipe["price"]}
         cook_ticks = max(1, round(recipe["cook_s"] * TICK))
         if isinstance(self.stock, list):
-            if self.freshness is None or base_price is None:
-                return None
             items = self._reserved_ingredients(customer, ingredients)
             if items is None:
                 return None
             used_ids = {item["id"] for item in items}
+            units = sum(self._units.pop(item_id) for item_id in used_ids)
+            dish["base_price"] = recipe["price"] * units // (len(items) * self.FRESH_SCALE * 100)
             self.stock[:] = [item for item in self.stock if item["id"] not in used_ids]
-            dish["base_price"] = base_price
             event_items = {"items": [dict(item) for item in items]}
         else:
             if any(self.stock.get(kind, 0) < quantity for kind, quantity in ingredients.items()):
@@ -197,10 +185,10 @@ class QuanSim:
         stock_by_id = {item["id"]: item for item in self.stock}
         items = []
         counts = {}
-        threshold = self.freshness["spoiled_below"]
+        threshold = self._threshold_units()
         for item_id in reserved:
             item = stock_by_id.get(item_id)
-            if item is None or item["fresh"] < threshold:
+            if item is None or self._units[item_id] < threshold:
                 return None
             kind = item["kind"]
             counts[kind] = counts.get(kind, 0) + 1
@@ -249,6 +237,8 @@ class QuanSim:
         for stove in self.stoves:
             if stove["state"] == "ready":
                 stove["ready_ticks"] += 1
+                if self.burn_ticks is not None and stove["ready_ticks"] > self.burn_ticks:
+                    events.append(self._burn_dish(stove))
             elif stove["state"] == "cooking":
                 stove["cook_ticks_left"] = max(0, stove["cook_ticks_left"] - 1)
                 event = self.finish_cooking(stove)
@@ -288,7 +278,7 @@ class QuanSim:
             customer = min(orders, key=lambda c: (c["order_tick"], id_key(c["table_id"])), default=None)
             if customer is None:
                 return None
-            event = self.start_cooking(target, customer, base_price=self._locked_base_price(customer))
+            event = self.start_cooking(target, customer)
             if event:
                 customer.update(order_status="assigned", reserved=[] if isinstance(self.stock, list) else {})
             return event
@@ -304,6 +294,21 @@ class QuanSim:
                                 eat_ticks_left=round(self.t["eat_s"] * TICK))
             return event
         return None
+
+    def _burn_dish(self, stove):
+        dish = stove["dish"]
+        stove.update(state="idle", dish=None, cook_ticks_left=0, ready_ticks=0)
+        customer = next(c for c in self.customers if c["id"] == dish["order_id"])
+        recipe = self.menu[dish["dish_id"]]["recipe"]
+        if self._item_mode:
+            reserved = self._pick_freshest(recipe, exclude=self._held_ids())
+        else:
+            available = self._available()
+            reserved = dict(recipe) if all(available.get(k, 0) >= n for k, n in recipe.items()) else None
+        customer["order_status"] = "unfulfillable" if reserved is None else "reserved"
+        customer["reserved"] = reserved if reserved is not None else ([] if self._item_mode else {})
+        return "dish_burnt", {"stove_id": stove["id"], "order_id": dish["order_id"],
+                             "dish_id": dish["dish_id"], "order_status": customer["order_status"]}
 
     def _pay_customers(self, events):
         for customer in sorted(self.customers, key=lambda c: id_key(c["table_id"])):
