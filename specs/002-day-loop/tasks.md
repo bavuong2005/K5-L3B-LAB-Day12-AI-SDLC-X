@@ -14,7 +14,7 @@
 - [ ] T204 [P] [US0] [sim/quan] (TV3) Lõi khách: `self.tick`, lịch 120 + 900·k nếu có bàn trống, ghế id nhỏ nhất, chọn đều theo seed, giữ chỗ, `order_tick`, kiên nhẫn 3600, `customer_left` −0.5, `no_dish`, khách tập trường cố định (≈ P1 T005, T016–T019)
 - [ ] T205 [US0] [sim/quan] (TV4) Lõi bếp/bàn: một interact/tick (dist, bếp trước bàn, id), bếp lấy đơn reserved cũ nhất theo `order_tick` rồi id bàn, `cook_started/dish_ready/dish_picked/served`, ăn 600 → `paid`, boa `floor(giá·0.2)` khi ≥ 50% lúc giao, uy tín +0.2 (≈ P1 T021–T023)
 - [ ] T206 [US0] [sim/quan] (TV4) Đóng ca: khách đang ăn trả ngay, khách chờ rời không trừ uy tín, dọn món + giữ chỗ → `quan_end` (≈ P1 T024)
-- [ ] T207 [P] [US0] [qa] (TV5) Test AC-P1-01…24 với số chuẩn — `tests/test_p1_rules.py`
+- [x] T207 [P] [US0] [qa] (TV5) Test AC-P1-01…24 với số chuẩn — `tests/test_p1_rules.py` — map trong `docs/verification/phase-1.md`
 
 ## Lát (1) — TV1: số chuẩn v1.1 + cá bơi/sinh
 
@@ -24,7 +24,7 @@
 - [x] T213 [US1] [sim/gather] (TV1) `chonoi/sim/fish.py`: 8 đàn đầu ca ở 8 điểm khác nhau (seed), bơi 1.5 m/s, đổi hướng bước 120·k trước khi bơi, phản xạ mép/góc, `age_ticks`
 - [x] T214 [US1] [sim/gather] (TV1) Sinh cá tại `phase_tick = 360·k`: trần 12, clearance > 1 m, trọng số chuẩn hóa, `fish_spawned`, `IdAllocator`; `random_fish:false` tắt bơi/sinh
 - [x] T215 [US1] [sim/gather] (TV1) Ghép vào `GatherSim.step` theo thứ tự v1.1 (bắt cá dùng vị trí trước bơi; cá bơi/sinh sau xét hết giờ)
-- [ ] T216 [P] [US1] [qa] (TV5) Test AC-P2-01, 03–07
+- [x] T216 [P] [US1] [qa] (TV5) Test AC-P2-01, 03–07 — `tests/test_p2_acceptance.py`
 
 ## Lát (2) — TV2: Cá Sấu, Máu, ngất, rơi LIFO
 
@@ -32,14 +32,14 @@
 - [ ] T221 [US2] [sim/gather] (TV2) Hit: sau khi cả hai di chuyển, ≤ 1.5 m, d ≥ 10, hết bất tử; tối đa 1 hit/bước (gần nhất, id); −1 Máu, rơi `floor(n·loss_ratio)` theo LIFO, `invuln_ticks = 90`, `monster_hit {monster_id,hp,lost,pos}`
 - [ ] T222 [US2] [sim/gather] (TV2) Recoil 60 bước từ bước sau, 2/60 m/bước xa người chơi (trùng tâm +x), chặn mép, không hit → patrol
 - [ ] T223 [US2] [sim/gather] (TV2) Máu 0 do hit → `faint {cause:"monster", lost:[giỏ còn lại], hp:0}` ngay sau `monster_hit` → `gather_end(fainted)` kho rỗng; snapshot `monsters[]`, `player.invuln_ticks`
-- [ ] T224 [P] [US2] [qa] (TV5) Test AC-P2-08…14
+- [x] T224 [P] [US2] [qa] (TV5) Test AC-P2-08…14 — pass trong `tests/test_gather_phase2_monsters.py`
 
 ## Lát (3) — TV3 + TV4: quán 2 bếp / 4 bàn / 6 món + day_plan (sau P0)
 
 - [ ] T230 [US3] [sim/quan] (TV3) Bàn T1–T4, ghế trống id nhỏ nhất; menu 6 món từ dữ liệu; `QuanSim` nhận `plan_dishes` (None = quán riêng, cả 6 món); lọc menu theo kế hoạch **trước** lọc nguyên liệu
 - [ ] T231 [P] [US3] [sim/quan] (TV4) 2 bếp nấu song song; interact chọn đúng bếp/bàn; đóng ca với nhiều bàn
 - [ ] T232 [P] [US3] [qa] (TV3) Kiểm `day_plan.ingredients` = Σ công thức × suất (unit test trên contract)
-- [ ] T233 [P] [US3] [qa] (TV5) Test AC-P2-16, 17
+- [x] T233 [P] [US3] [qa] (TV5) Test AC-P2-16, 17 — `test_ac_p2_16_*`, `test_quan_p2`
 
 ## Lát (4) — TV6 (+TV5): mode day, Shop, pause, sự kiện đổi pha
 
@@ -51,14 +51,14 @@
 - [x] T245 [US4] [sim/day] (TV6, pair TV5) Pause trong `runner.py` (lớp bọc chung để gather/quan độc lập cũng pause): tách `tick`/`sim_tick`/`phase_tick`; `paused`/`resumed`; timer kể cả Shop đứng yên; snapshot `state:"paused"`
 - [x] T248 [P] [US4] [sim/day] (TV6) `chonoi/live.py` (file khung): `--mode day`, `set_input` nhận `pause`/`shop_done`/`buy`, `meta` theo pha + `menu`, `day_plan`, `shop` — để UI Cursor chạy được
 - [ ] T246 [P] [US4] [sim/gather] (TV2) `GatherSim`/`QuanSim` nhận ngữ cảnh Ngày: `oxygen_max`, `hp_max` theo `active_upgrades`; M2 từ Ngày 3
-- [ ] T247 [P] [US4] [qa] (TV5) Test AC-P2-15, 18–28
+- [x] T247 [P] [US4] [qa] (TV5) Test AC-P2-15, 18–28 — pass trong `tests/test_day_mode.py` và `tests/test_gather_phase2_monsters.py`
 
 ## QA — TV5: contract v1.1, smoke tích hợp, regression P1
 
-- [ ] T250 [qa] (TV5) Smoke tích hợp ở phút 20: `gather --inventory-out` → `quan --inventory`, so snapshot kho tick 0; lưu `docs/proof/phase-2/integration.{jsonl,md}` (AC-P2-31)
-- [ ] T251 [qa] (TV5) Regression P1 với số chuẩn: chạy toàn bộ test (AC-P2-02). Sửa test cũ có lý do trong commit: `tests/test_smoke_p1.py:45` (6 → 8 đàn, đọc từ tuning), `:70-77` (bỏ `day` khỏi danh sách mã 2; thêm `--days 0/6` → 2); sửa `:65-67` và `tests/test_python_starter_units.py:46-50` (`attack` chưa bật → bỏ qua, mã 0 — đề §4.2); `test_session_steps_gather_and_dock` nếu đổi bộ đếm tick
-- [ ] T252 [P] [qa] (TV5) Smoke `day --days 1` + đo thời gian ≤ 20 s; `day --days 2` mua oxy → Ngày 2 oxy max 2700; `cmp` tất định (AC-P2-23, 25, 29, 30) → `docs/proof/phase-2/`
-- [ ] T253 [qa] (TV5) `docs/verification/phase-2.md`: AC-P2-01…31 → test → kết quả trên commit bàn giao
+- [x] T250 [qa] (TV5) Smoke tích hợp: `gather --inventory-out` → `quan --inventory`, snapshot kho tick 0 khớp; lưu `docs/proof/phase-2/integration.*` (AC-P2-31)
+- [x] T251 [qa] (TV5) Regression P1 với số chuẩn: chạy toàn bộ test (AC-P2-02). Sửa test cũ có lý do trong commit: `tests/test_smoke_p1.py:45` (6 → 8 đàn, đọc từ tuning), `:70-77` (bỏ `day` khỏi danh sách mã 2; thêm `--days 0/6` → 2); sửa `:65-67` và `tests/test_python_starter_units.py:46-50` (`attack` chưa bật → bỏ qua, mã 0 — đề §4.2); `test_session_steps_gather_and_dock` nếu đổi bộ đếm tick — regression xanh trên `a5d5965`
+- [x] T252 [P] [qa] (TV5) Smoke `day --days 1` (2.44 s); test mua oxy → Ngày 2 oxy max 2700; smoke `day --days 2` so byte (AC-P2-23, 25, 29, 30) → `docs/proof/phase-2/`
+- [x] T253 [qa] (TV5) `docs/verification/phase-2.md`: AC-P2-01…31 → test → kết quả trên commit kiểm
 - [x] T254 [P] [qa] (TV6) Cập nhật `docs/clarify.md` (theo dõi #30, #32, #33 còn GIẢ ĐỊNH), `docs/ai-usage-log.md`, `docs/retro.md` (phút 45–50)
 - [x] T255 [qa] (TV1) Gắn tag `phase-2` sau khi TV5 báo xanh (trước 1:55)
 

@@ -31,12 +31,12 @@
 ## Phase 4 — Retro + members (phút 15–25)
 - [x] T440 [retro] (TV6) Retro cuối: rà hành động P2 (đã làm chưa / vì sao); tốt / tệ; số liệu commit & token theo người; 1 lỗi AI + cách phát hiện; nếu làm lại đổi gì — `docs/retro.md`
 - [ ] T441 [retro] (mọi người) `docs/members/<handle>.md` ≤ 200 từ: phần mình làm, đã giúp ai, AI sai ở đâu, bài học, dẫn commit — TV6 đã viết `docs/members/thanhhale288.md`; các handle khác tự điền
-- [ ] T442 [P] [qa] (TV5) Standup phút 20: rà vướng, điều người xong sang hỗ trợ — `docs/standup.md`
+- [x] T442 [P] [qa] (TV5) Standup phút 20: rà vướng, điều người xong sang hỗ trợ — `docs/standup.md`
 
 ## Phase 5 — Tag + Release (phút 25–30)
 - [x] T450 [release] (TV1 Integrator) Kiểm commit bàn giao trên `main`; viết release notes (điểm mới, cách chạy, giới hạn) — `docs/release-notes-v1.0.0.md`
 - [x] T451 [release] (TV1) Gắn tag `phase-1`…`phase-4` và GitHub Release `v1.0.0` trên `89a035d`. Verification phase-4 vẫn của TV5.
-- [ ] T452 [P] [qa] (TV5) Xác nhận clone sạch / artifact Release chạy được; checklist DoD
+- [ ] T452 [P] [qa] (TV5) Xác nhận clone sạch / artifact Release chạy được; checklist DoD — **một phần**: clone sạch `v1.0.0` chạy UI + 173 test OK; chưa xem được artifact Release (không có `gh`)
 
 ## Phase 6 — Mở rộng (sau lõi, nếu còn giờ) — nhóm 6 cần ≥ 2 mục cả lab
 - [ ] T460 [P] [ext] (tự nhận) `leaderboard` trong `extensions`: store top 10; `--export-leaderboard`; headless `day --leaderboard --player-name` ghi 1 mục khi `reason:"days_complete"` đủ 5 Ngày; thiếu cặp cờ / sai mode → mã 2; soak không ghi — test + README — ĐÃ có code, test (`tests/test_leaderboard.py`), README, `docs/proof/phase-4/leaderboard.md`; CÒN THIẾU: TV1 thêm `"leaderboard"` vào `extensions` trong contract

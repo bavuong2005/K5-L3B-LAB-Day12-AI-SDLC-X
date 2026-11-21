@@ -1,0 +1,26 @@
+== pre-push-check ==
+Thời điểm: 2026-11-21 22:37:00
+Git: NguyenMinhPhuc @ a5d5965
+SEED=1 TICKS=600
+
+-- Bước 1: unit test --
+..s............................................................................................................................s..s.s..........................................................................
+----------------------------------------------------------------------
+Ran 207 tests in 66.724s
+
+OK (skipped=4)
+
+headless_cmd: python3 -m chonoi.headless
+-- Bước 2: tất định (cùng seed => cùng byte) --
+  gather: giống hệt nhau (111279 byte)
+  quan: giống hệt nhau (37938 byte)
+
+-- Bước 3: đầu vào sai => exit 2 --
+  --ticks -1 => exit 2 (đầu vào sai: --ticks phải >= 0)
+
+== Tổng kết ==
+  [PASS] Bước 1: unit test
+  [PASS] Bước 2: tất định mode=gather
+  [PASS] Bước 2: tất định mode=quan
+  [PASS] Bước 3: --ticks -1 trả exit 2
+KẾT QUẢ: PASS — có thể push.

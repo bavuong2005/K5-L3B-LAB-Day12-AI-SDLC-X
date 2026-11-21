@@ -5,6 +5,7 @@
 ## Lệnh
 - Test: `PYTHONPATH=tests:. python3 -m unittest discover -s tests -v`
 - Headless: `python3 -m chonoi.headless --mode gather|quan --seed 1 --ticks 600 --out out.jsonl`
+- Bench / soak (v1.3): `python3 -m chonoi.bench --seed 42 --duration 30 --out bench.json` · `python3 -m chonoi.soak --seed 7 --days 10 --out soak.json`
 - Chơi thử trên trình duyệt: `python3 -m chonoi.live --mode gather|quan` (mở địa chỉ in ra; WASD, E, Space, R)
 
 ## Cấu trúc & quy ước
@@ -52,4 +53,5 @@
 
 ## Skills / hooks của nhóm
 - **pre-push-check** (`.agents/skills/pre-push-check/`): dùng trước mọi lần push, trước khi tag phase-N, và sau khi agent sửa code. Chạy unit test + tất định headless (gather/quan, cùng seed so byte) + exit 2 khi đầu vào sai. Lệnh: `.agents/skills/pre-push-check/check.sh [--save docs/proof/phase-<n>]` (env `SEED`, mặc định 1).
-- (skill thứ 2: TODO)
+- **phase-proof** (`.agents/skills/phase-proof/`): dùng khi QA chốt phase hoặc điền `docs/verification/phase-N.md`. Sinh bằng chứng CLI thật (bàn giao kho, spoiled, `day`, `cmp`, bench, soak) vào `docs/proof/phase-<n>/proof.md`, có ghi commit. Lệnh: `.agents/skills/phase-proof/proof.sh 3|4` (env `BENCH_S`, mặc định 30; `SOAK_DAYS`, mặc định 2).
+- Test chấp nhận hộp đen theo AC: `tests/test_p{1,2,3}_acceptance.py`, `tests/test_p4_runners.py`. Chạy CLI với `game.contract.json` thật; so `fresh` trong JSONL dùng dung sai ±0.01.
