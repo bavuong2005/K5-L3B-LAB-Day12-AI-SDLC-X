@@ -24,3 +24,8 @@
 - Một phần: AC-P4-02 (bench không render thật) và AC-P4-11 (thiếu khai mục mở rộng thứ 2).
 - Chưa kiểm được: AC-P4-05 (artifact trên GitHub Release).
 - Việc cần làm (không thuộc file của TV5): TV1 xác nhận và đính kèm artifact Release (T421), cân nhắc khai mục phụ đề SFX trong `extensions`. Nếu còn giờ, TV5 cùng TV2 làm bench chạy client WebGL thật (T411).
+
+## Bổ sung của TV6 (2026-11-22, sau bản kiểm của TV5 — TV5 cần chạy lại trên commit bàn giao)
+- **AC-P4-02 (bench):** `chonoi/bench.py` nay có `--mode browser` (mặc định `auto`): dựng client web thật trong Chrome headless 1280×720 và đo khung `requestAnimationFrame`. Số mới `docs/proof/phase-4/bench.json`: xem [`bench-notes.md`](../proof/phase-4/bench-notes.md) (phương pháp, giới hạn: vsync tắt, WebGL phần mềm, 1% low dao động giữa các lần chạy). Không có Chrome thì rơi về `--mode sim` (không phải render).
+- **AC-P4-11 (mở rộng):** thêm `leaderboard` (`chonoi/leaderboard.py`, `tests/test_leaderboard.py`, bằng chứng `docs/proof/phase-4/leaderboard.md`). **Chưa khai** trong `game.contract.json` (`extensions` vẫn `["burn"]`; chỉ TV1 sửa) — TV1 cần đổi thành `["burn","leaderboard"]`.
+- Thêm ngoài DoD: đồ họa PixiJS thủ tục (`chonoi/web/art/`), hướng dẫn chơi, cốt truyện, nhạc nền, chế độ terminal `chonoi.play`. Test toàn bộ xem lần chạy cuối trong `docs/proof/phase-4/`.
