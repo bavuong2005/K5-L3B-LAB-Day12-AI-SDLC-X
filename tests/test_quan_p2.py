@@ -163,17 +163,21 @@ class DayModeCli(unittest.TestCase):
             self.assertEqual(rows[-1]["reason"], "days_complete")
             self.assertEqual(rows[-1]["days_completed"], 1)
 
-    def test_quan_inventory_6_loai_v11_con_v10_van_chan(self):
-        if load_contract()["tuning"].get("day_plan") or load_contract()["tuning"].get("shop"):
-            self.skipTest("game.contract.json đã lên v1.1: kho 6 loại hợp lệ với cả contract thật")
+    def test_quan_inventory_6_loai_hop_le_voi_contract_that(self):
         with Workdir() as w:
-            inv = write_json(w.path("inv.json"), {"items": {"ca_keo": 1, "keo_neo": 2}})
+            inv = write_json(w.path("inv.json"), {"items": [{"id": "I1", "kind": "ca_keo", "fresh": 100},
+                                                            {"id": "I2", "kind": "keo_neo", "fresh": 100}]})
             code, err = self.run_cli("--mode", "quan", "--seed", "1", "--ticks", "0",
-                                     "--inventory", inv, "--out", w.path("a.jsonl"))
+                                     "--inventory", inv, "--out", w.path("a.jsonl"), contract=REAL)
             self.assertEqual(code, 0, err)
-            code2, _ = self.run_cli("--mode", "quan", "--seed", "1", "--ticks", "0",
-                                    "--inventory", inv, "--out", w.path("b.jsonl"), contract=REAL)
-            self.assertEqual(code2, 2, "contract v1.0 vẫn chặn ca_keo/keo_neo")
+
+    def test_quan_inventory_kind_la_bi_chan(self):
+        with Workdir() as w:
+            inv = write_json(w.path("inv.json"), {"items": [{"id": "I1", "kind": "ca_la", "fresh": 100}]})
+            code, _ = self.run_cli("--mode", "quan", "--seed", "1", "--ticks", "0",
+                                   "--inventory", inv, "--out", w.path("b.jsonl"), contract=REAL)
+            self.assertEqual(code, 2)
+            self.assertFalse(os.path.exists(w.path("b.jsonl")))
 
 
 class KindsV11(unittest.TestCase):
@@ -181,10 +185,8 @@ class KindsV11(unittest.TestCase):
 
     def test_menu_kinds_theo_contract(self):
         real = load_contract()["tuning"]
-        if real.get("day_plan") or real.get("shop"):  # TV1 đã nâng v1.1: khẳng định v1.0 không còn đúng
-            self.skipTest("game.contract.json đã lên v1.1")
-        self.assertEqual(sorted(menu_kinds(real["menu"])), sorted(KINDS_P1))
-        self.assertEqual(sorted(menu_kinds(MENU)), sorted(KINDS_V11))
+        self.assertEqual(set(menu_kinds(real["menu"])), set(KINDS_V11))
+        self.assertEqual(set(menu_kinds(MENU)), set(KINDS_V11))
 
     def test_scenario_quan_v11_nhan_kho_va_reserved_6_loai(self):
         with Workdir() as w:
@@ -193,14 +195,14 @@ class KindsV11(unittest.TestCase):
             b = load_scenario(write_json(w.path("s.json"), {"quan": block}), "quan", V11)
             self.assertEqual(b["customers"][0]["reserved"], MENU["lau_mam"]["recipe"])
 
-    def test_scenario_quan_v10_van_chan_ca_keo_la_nguyen_lieu_la(self):
+    def test_scenario_quan_chap_nhan_ca_keo_nhung_chan_kind_la(self):
         real = load_contract()["tuning"]
-        if real.get("day_plan") or real.get("shop"):
-            self.skipTest("game.contract.json đã lên v1.1: ca_keo là nguyên liệu hợp lệ")
         with Workdir() as w:
-            p = write_json(w.path("s.json"), {"quan": {"stock": {"ca_keo": 1}}})
+            ok = write_json(w.path("ok.json"), {"quan": {"stock": {"ca_keo": 1}}})
+            self.assertEqual(load_scenario(ok, "quan", real)["stock"]["ca_keo"], 1)
+            bad = write_json(w.path("bad.json"), {"quan": {"stock": {"ca_la": 1}}})
             with self.assertRaises(BadInput):
-                load_scenario(p, "quan", real)
+                load_scenario(bad, "quan", real)
 
     def test_scenario_gather_hold_v11_nhan_ca_keo_keo_neo(self):
         with Workdir() as w:

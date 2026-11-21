@@ -8,9 +8,11 @@ trỏ tới contract khác `game.contract.json` — chỉ để test dùng fixtu
 """
 
 import argparse
+import math
 import os
 import sys
 
+from . import leaderboard
 from .contract import DEFAULT_PATH, load_contract
 from .errors import BadInput
 from .inputs import buttons_for, load_frames
@@ -37,6 +39,10 @@ def _int(name):
 
 
 def main(argv=None) -> int:
+    argv = sys.argv[1:] if argv is None else list(argv)
+    exported = leaderboard.handle_export(argv, None)  # mở rộng `leaderboard`: chỉ khi có cờ xuất
+    if exported is not None:
+        return exported
     p = _Parser(prog="chonoi.headless")
     p.add_argument("--mode", required=True, choices=["gather", "quan", "day"])  # `day` có từ v1.1
     p.add_argument("--days", type=_int("days"), default=None)  # v1.1, chỉ với day
@@ -47,9 +53,21 @@ def main(argv=None) -> int:
     p.add_argument("--inputs")
     p.add_argument("--inventory")
     p.add_argument("--inventory-out", dest="inventory_out")
+    p.add_argument("--leaderboard")  # mở rộng `leaderboard`: đi cặp với --player-name, chỉ mode day
+    p.add_argument("--player-name", dest="player_name")
     p.add_argument("--snapshot-every", dest="snapshot_every", type=_int("snapshot-every"), default=10)
     a = p.parse_args(argv)
     try:
+        if (a.leaderboard is None) != (a.player_name is None):
+            raise BadInput("--leaderboard và --player-name phải đi cặp")
+        if a.leaderboard is not None:
+            if a.mode != "day":
+                raise BadInput("--leaderboard chỉ dùng với --mode day")
+            if not a.player_name.strip():
+                raise BadInput("--player-name phải khác rỗng")
+            if os.path.abspath(a.leaderboard) in [os.path.abspath(x) for x in (a.out, a.scenario, a.inputs) if x]:
+                raise BadInput("--leaderboard phải khác các đường dẫn khác")
+            leaderboard.load(a.leaderboard)  # store hỏng -> mã 2 trước khi ghi đầu ra
         if a.days is not None and a.mode != "day":
             raise BadInput("--days chỉ dùng với --mode day")
         days = 1 if a.days is None else a.days
@@ -86,9 +104,14 @@ def main(argv=None) -> int:
         sys.stderr.write(f"đầu vào sai: {e}\n")
         return 2
     try:
-        run(a.mode, tuning, scenario, a.seed, frames, a.ticks, a.out, a.snapshot_every,
+        sim = run(a.mode, tuning, scenario, a.seed, frames, a.ticks, a.out, a.snapshot_every,
             inventory=inventory, inventory_out=a.inventory_out, days=days, buttons=buttons, strings=strings,
             contract_version=contract["contract_version"])
+        # ghi đúng một mục: chạy đủ 5 Ngày chuẩn (không scenario), reason days_complete
+        if (a.leaderboard and not a.scenario and days == 5 and sim.done
+                and sim.reason == "days_complete" and sim.days_completed == 5):
+            score = sim.earned + tuning["score"]["reputation_multiplier"] * math.floor(sim.reputation)
+            leaderboard.add(a.leaderboard, a.player_name, score, sim.days_completed, a.seed)
     except BadInput as e:  # lỗi mức luật phát hiện lúc dựng sim
         sys.stderr.write(f"đầu vào sai: {e}\n")
         return 2

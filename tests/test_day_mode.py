@@ -58,15 +58,16 @@ class DayCliTest(unittest.TestCase):
                 self.assertEqual(run(*c, "--seed", "1", "--ticks", "5", "--out", out)[0], 2, c)
             self.assertFalse(os.path.exists(out))
 
-    def test_real_contract_without_v11_keys_exit_2_clear_message(self):
+    def test_contract_without_day_plan_exit_2_clear_message(self):
+        """Contract thiếu khóa v1.1 (day_plan) bị từ chối rõ ràng, không tạo file out."""
         with open(REAL, encoding="utf-8") as f:
-            tuning = json.load(f)["tuning"]
-        if "day_plan" in tuning and "shop" in tuning:
-            self.skipTest("game.contract.json đã có khóa v1.1 (TV1 xong T210)")
+            c = json.load(f)
+        c["tuning"].pop("day_plan")
         with Workdir() as w:
-            code, err = run("--mode", "day", "--seed", "1", "--ticks", "5", "--out", w.path("o.jsonl"), contract=REAL)
+            bad = write_json(w.path("no-plan.json"), c)
+            code, err = run("--mode", "day", "--seed", "1", "--ticks", "5", "--out", w.path("o.jsonl"), contract=bad)
             self.assertEqual(code, 2)
-            self.assertIn("chờ TV1", err)
+            self.assertIn("day_plan", err)
             self.assertFalse(os.path.exists(w.path("o.jsonl")))
 
     def test_attack_photo_ignored_with_v11(self):
