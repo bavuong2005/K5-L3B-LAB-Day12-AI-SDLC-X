@@ -9,7 +9,7 @@
 
 - Rà hành động Phase 2 ("adapter kho trước, schema trong 7 phút, push sớm"): **làm một phần**. ADR-0001 và research P3 có trước code; HUD độ tươi (T335/T336) và khung `day` đã lên `main`. Chưa xong vì contract vẫn chưa lên v1.2 do TV1 (schema `inventory.py`) và lát gather/quan độ tươi chưa khép — standup phút 20 P3 không kịp đổi người sang adapter.
 - Điều tốt: PO chép được TICKET-02/03/04 vào repo nên agent đọc đề được; UI P1–P2 và cảnh báo P4 nằm ở `chonoi/web/` không đụng sim; PR #2/#4/#5 đã vào `main`.
-- Điều tệ: tag `phase-1`…`phase-3` vẫn chưa gắn; checkbox task từng bị lệch so với code (UI P2 đã có mà `tasks.md` còn `[ ]`); id cá thể xuyên Ngày (T331) chưa có `ItemIds`.
+- Điều tệ: tag `phase-1`…`phase-3` gắn muộn và gắn một lượt (cùng 16:33 ngày 2026-11-21, sau `phase-4`), không đúng hạn từng phase; checkbox task từng bị lệch so với code (UI P2 đã có mà `tasks.md` còn `[ ]`); id cá thể xuyên Ngày (T331) chưa có `ItemIds`.
 - Số liệu commit trên `main` (2026-11-21, `git shortlog -sn`): thanhhale288 27, Hai Duong 9, Hela 5 (merge), dqk2210 5, Hải Đăng 4, MinPhuc 4, noobpyno 3, thanhanbk02 1. Đọc chéo: TV6 review PR quán/gather khi merge. Token: từng người chưa điền `/cost` — ô nhật ký còn trống.
 - Một lần AI sai:
   - Bản chép TICKET-02 lọc trùng làm rơi ô bảng và chuỗi trong ngoặc kép; phát hiện khi đối chiếu board lần 2, chép lại không lọc (`docs/ai-usage-log.md`).

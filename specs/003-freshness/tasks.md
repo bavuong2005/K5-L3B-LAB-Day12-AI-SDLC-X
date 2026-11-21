@@ -50,7 +50,7 @@
 - [ ] T343 [P] [qa] (TV5) `CHANGELOG.md`: breaking change kho cá thể, schema mới, cách cập nhật fixture (hold/stock/reserved/inventory); test đổi + lý do
 - [ ] T344 [qa] (TV5) `docs/verification/phase-3.md` AC-P3-01…23 → bằng chứng → kết quả; skill nhóm #2
 - [x] T345 [P] [qa] (TV6) Standup phút 20, retro (bài học đổi kho), `docs/ai-usage-log.md`, `docs/clarify.md`
-- [ ] T346 [qa] (TV1) Tag `phase-3` sau khi TV5 báo xanh (trước 2:30)
+- [x] T346 [qa] (TV1) Tag `phase-3` sau khi TV5 báo xanh (trước 2:30)
 
 ## Mở rộng P3 — tùy chọn, sau lõi
 - `current` (dòng lũ), `reservations` (khách đặt trước): chỉ làm khi lõi độ tươi + bàn giao đã xanh; ưu tiên vẫn là `burn`, `snake` (đề xuất từ P2). Không có task bắt buộc ở phase này.

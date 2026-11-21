@@ -61,7 +61,7 @@ Sự kiện quán (khách, bếp, tiền) do TV3/TV4 điền khi viết `quan.py
 
 ## 4. Contract v1.1 (Phase 2, TV1)
 
-`game.contract.json` là `"1.1"`. `fish_initial` là số **8** (không còn danh sách đàn). Thêm N5/N6 `keo_neo`, `fish_yield.ca_keo` = 2, `day_plan` D1–D5, `shop` (oxygen/hp), `gather.monsters` (Cá Sấu — luật do TV2).
+`game.contract.json` ban đầu là `"1.1"` (Phase 2); hiện là `"1.3"` (xem CHANGELOG). `fish_initial` là số **8** (không còn danh sách đàn). Thêm N5/N6 `keo_neo`, `fish_yield.ca_keo` = 2, `day_plan` D1–D5, `shop` (oxygen/hp), `gather.monsters` (Cá Sấu — luật do TV2).
 
 `random_fish: false` tắt cá mặc định, tắt bơi và tắt sinh; cá trong scenario đứng yên. Cờ bật mà có `fish` thì dùng đàn đó và vẫn bơi/sinh.
 

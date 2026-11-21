@@ -63,9 +63,9 @@
 
 ### TV5 — QA lead
 - [ ] T251: sửa test cũ vỡ khi contract lên v1.1, **ghi lý do trong commit**: `test_smoke_p1.py:45, :65-67, :70-77`, `test_python_starter_units.py:46-50`.
-- [ ] Smoke tích hợp `gather --inventory-out → quan --inventory`, lưu `docs/proof/phase-2/integration.*`; smoke `day --days 1`.
-- [ ] Điền `docs/verification/phase-2.md` (AC-P2-xx → bằng chứng → kết quả, trung thực).
-- [ ] Skill nhóm tự viết #1 trong `.agents/skills/` (Spec Kit không tính).
+- [x] Smoke tích hợp `gather --inventory-out → quan --inventory`, lưu `docs/proof/phase-2/integration.*`; smoke `day --days 1`.
+- [x] Điền `docs/verification/phase-2.md` (AC-P2-xx → bằng chứng → kết quả, trung thực).
+- [x] Skill nhóm tự viết #1 trong `.agents/skills/` (Spec Kit không tính).
 
 ### TV6 — thanhhale288
 - [x] Spec 002, research P2, UI menu/DayIntro/EveningIntro/DayResult/Shop/Summary/pause/HUD (chữ ≥ 18 px).
@@ -110,7 +110,7 @@
 ### TV5
 - [ ] Test ngưỡng 30, thử giữ lại khi vừa ươn, chốt giá, bàn giao file (smoke của đề: `fresh:100`, `interact` frame 0, `quan --inventory <file> --ticks 0`).
 - [ ] Phút 20: smoke kho; cuối: smoke 2 tiến trình + `day`, regression P1–P2; 8 test sẽ vỡ liệt kê trong research P3.
-- [ ] `docs/verification/phase-3.md`, `docs/proof/phase-3/`, `CHANGELOG.md`; skill nhóm #2.
+- [x] `docs/verification/phase-3.md`, `docs/proof/phase-3/`, `CHANGELOG.md`; skill nhóm #2.
 
 ### TV6
 - [x] Spec 003, research P3, ADR-0001 (bảng tác động), HUD độ tươi (T335), clarify #34–#45.
@@ -145,8 +145,8 @@ Chi tiết task: [`specs/004-release/tasks.md`](specs/004-release/tasks.md) · P
 - [ ] (sau lõi) T462: `burn` (TV4) hoặc mục đã chọn + bằng chứng.
 
 ### TV5 — Bench/QA / Soak
-- [ ] T411–T412: implement/chạy bench → `docs/proof/phase-4/bench.json` (5 trường đúng công thức).
-- [ ] T422–T423: `soak_cmd` sẵn sàng (đủ schema `soak.json`); smoke ngắn; GV sẽ chạy 10 Ngày.
+- [x] T411–T412: implement/chạy bench → `docs/proof/phase-4/bench.json` (5 trường đúng công thức).
+- [x] T422–T423: `soak_cmd` sẵn sàng (đủ schema `soak.json`); smoke ngắn; GV sẽ chạy 10 Ngày.
 - [ ] T430–T431, T442, T452: regression P1–P3; ma trận AC-P4; standup phút 20; xác nhận DoD trước khi TV1 gắn tag.
 
 ### TV6 — UI cảnh báo, retro, demo

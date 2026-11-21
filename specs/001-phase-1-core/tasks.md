@@ -8,13 +8,13 @@
 
 ## Phase 1: Setup / hợp đồng (0:00–0:15)
 
-- [ ] T001 [qa] (TV1) Sửa `team_size` = 6 trong `game.contract.json` (người được phép sửa file chung)
-- [ ] T002 [P] [qa] (TV1) Chốt `docs/contracts/` từ `specs/001-phase-1-core/contracts/events.md` + `sim-ui.md` (tên sự kiện, `data`, trường snapshot — đang là GIẢ ĐỊNH, Q-D)
+- [x] T001 [qa] (TV1) Sửa `team_size` = 6 trong `game.contract.json` (người được phép sửa file chung)
+- [x] T002 [P] [qa] (TV1) Chốt `docs/contracts/` từ `specs/001-phase-1-core/contracts/events.md` + `sim-ui.md` (tên sự kiện, `data`, trường snapshot — đang là GIẢ ĐỊNH, Q-D)
 - [ ] T003 [P] [qa] (TV6) [XONG một phần — TICKET-02 đã trả lời] PO đối chiếu `GIẢ ĐỊNH` #12–#21 trong `docs/clarify.md` + Q-A…Q-F (`docs/research/phase-1.md` mục 7) với PRD-0; sửa spec nếu khác
 
 ## Phase 2: Foundational (chặn mọi story)
 
-- [ ] T004 [sim/gather] (TV1) Thêm helper `_nearest(coll, radius)` (khóa `(dist, id)`) và `_add_to_hold(kind, count) -> bool` (tất cả hoặc không, ≤ `hold_capacity`) — `chonoi/sim/gather.py`
+- [x] T004 [sim/gather] (TV1) Thêm helper `_nearest(coll, radius)` (khóa `(dist, id)`) và `_add_to_hold(kind, count) -> bool` (tất cả hoặc không, ≤ `hold_capacity`) — `chonoi/sim/gather.py`
 - [ ] T005 [P] [sim/quan] (TV3) Thêm `self.tick`, helper `_ticks(sec)` đọc `tick_hz`, `_clamp_rep()` (kẹp + `round(x,6)`), dựng khách từ scenario với tập trường cố định (`state`, `dish_id`, `patience_ticks_left`, `eat_ticks_left`, `reserved`) — `chonoi/sim/quan.py`
 - [ ] T006 [P] [qa] (TV5) Tạo khung `tests/test_p1_rules.py` dùng `tests/helpers.py` (Workdir, run_headless, events, snapshots)
 
@@ -22,9 +22,9 @@
 
 ## Phase 3: US1 — Lặn sinh tồn (P1) 🎯 MVP
 
-- [ ] T007 [US1] [sim/gather] (TV1) `_update_zone(was_surface)` → `dive`/`surface` {pos} — `chonoi/sim/gather.py`
-- [ ] T008 [US1] [sim/gather] (TV1) `_update_oxygen()` theo d cuối bước, kẹp, `oxygen_empty` — `chonoi/sim/gather.py`
-- [ ] T009 [US1] [sim/gather] (TV1) Ngạt (`zero_oxy_ticks` tính cả bước chạm 0, `choke` {hp}, reset khi oxy > 0 hoặc lên mặt nước — đã xác nhận bởi TICKET-02) + ngất (`faint`, `hold=[]`, `_finish("fainted")`, return) — `chonoi/sim/gather.py`
+- [x] T007 [US1] [sim/gather] (TV1) `_update_zone(was_surface)` → `dive`/`surface` {pos} — `chonoi/sim/gather.py`
+- [x] T008 [US1] [sim/gather] (TV1) `_update_oxygen()` theo d cuối bước, kẹp, `oxygen_empty` — `chonoi/sim/gather.py`
+- [x] T009 [US1] [sim/gather] (TV1) Ngạt (`zero_oxy_ticks` tính cả bước chạm 0, `choke` {hp}, reset khi oxy > 0 hoặc lên mặt nước — đã xác nhận bởi TICKET-02) + ngất (`faint`, `hold=[]`, `_finish("fainted")`, return) — `chonoi/sim/gather.py`
 - [ ] T010 [P] [US1] [qa] (TV5) Test AC-P1-01…05 — `tests/test_p1_rules.py`
 
 ## Phase 4: US2 — Hái, bắt cá, giỏ LIFO (P1)
@@ -75,7 +75,7 @@
 - [ ] T033 [qa] (TV5) Điền `docs/verification/phase-1.md` (AC-P1-01…23 → test → kết quả trung thực)
 - [ ] T034 [P] [qa] (TV5) Skill/hook #1 của nhóm ở `.agents/skills/` + cập nhật `AGENTS.md`
 - [ ] T035 [P] [qa] (TV6) Gom `docs/ai-usage-log.md`, `docs/standup.md`; kiểm `git shortlog -sn` ở 0:50
-- [ ] T036 [qa] (TV1) Test xanh (TV5 báo) → gắn tag `phase-1`
+- [x] T036 [qa] (TV1) Test xanh (TV5 báo) → gắn tag `phase-1`
 
 ## Phụ thuộc & song song
 

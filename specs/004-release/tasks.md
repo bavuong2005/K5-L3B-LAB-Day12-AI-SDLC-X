@@ -12,19 +12,19 @@
 
 ## Phase 1 — Contract v1.3 + bench (phút 0–15) — song song
 - [x] T410 [US1] [bench] (TV1) `game.contract.json`: `contract_version:"1.3"`, khai `bench_cmd` + `soak_cmd` ở gốc; gameplay/tuning/kho/JSONL giữ v1.2 — `game.contract.json`, `chonoi/contract.py` nếu cần validate
-- [ ] T411 [US1] [bench] (TV5 + TV2 hỗ trợ) Implement/runner `<bench_cmd> --seed <int> --duration <s> --out <bench.json>`: cảnh gather lõi (độ tươi, cá bơi, Cá Sấu, FX mặc định), Út Sen đứng yên ở bến, cửa sổ 1280×720, warm-up 3 s rồi đo 30 s; xuất đủ 5 trường `avg_fps`, `p1_low_fps`, `frames`, `measured_s`, `load_ms`
-- [ ] T412 [P] [US1] [qa] (TV5) Chạy bench seed 42 → lưu `docs/proof/phase-4/bench.json` (+ log); ghi AC-P4-bench trong verification
+- [x] T411 [US1] [bench] (TV5 + TV2 hỗ trợ) Implement/runner `<bench_cmd> --seed <int> --duration <s> --out <bench.json>`: cảnh gather lõi (độ tươi, cá bơi, Cá Sấu, FX mặc định), Út Sen đứng yên ở bến, cửa sổ 1280×720, warm-up 3 s rồi đo 30 s; xuất đủ 5 trường `avg_fps`, `p1_low_fps`, `frames`, `measured_s`, `load_ms` — bằng chứng: `chonoi/bench.py` chạy lại ở bản sao sạch, exit 0, đủ 5 trường (auditor 2026-11-21)
+- [x] T412 [P] [US1] [qa] (TV5) Chạy bench seed 42 → lưu `docs/proof/phase-4/bench.json` (+ log); ghi AC-P4-bench trong verification — bằng chứng: `docs/proof/phase-4/bench.json`
 - [x] T413 [P] [US1] [client/ui] (TV6) Cảnh báo chữ/biểu tượng: thủy quái gần, oxy sắp hết, khách sắp giận; thêm chế độ tương phản cao; chơi thử 3 cảnh báo — `chonoi/web/index.html`
 
 ## Phase 2 — Đóng gói + soak sẵn sàng (phút 0–15, song song Phase 1)
-- [ ] T420 [US2] [packaging] (TV1 / Đóng gói) README: yêu cầu môi trường, điều khiển, lệnh test, headless, benchmark; từ clone sạch chạy UI **≤ 3 lệnh** (macOS/Linux)
-- [ ] T421 [US2] [packaging] (TV1) Chuẩn bị artifact đóng gói đính kèm Release (zip/bundle chạy được)
-- [ ] T422 [US2] [soak] (TV5) Implement/runner `<soak_cmd> --seed <int> --days <N> --out <soak.json>`: 1 tiến trình headless, mỗi Ngày `gather → quan → shop`, D1–D5 lặp Ngày 6–10; state tiền/uy tín/nâng cấp/id xuyên suốt; `soak.json` có `days,days_completed,crashes,results[],duration_s`; `results[]` có `day,earned,reputation,score` lúc Shop đóng
-- [ ] T423 [P] [US2] [qa] (TV5) Smoke soak ngắn (vd. `--days 1` hoặc 2) + ghi cách giảng viên chạy 10 Ngày; **không** bắt buộc chạy đủ 10 Ngày trên máy nhóm nếu hết giờ — lệnh phải sẵn sàng
+- [x] T420 [US2] [packaging] (TV1 / Đóng gói) README: yêu cầu môi trường, điều khiển, lệnh test, headless, benchmark; từ clone sạch chạy UI **≤ 3 lệnh** (macOS/Linux)
+- [x] T421 [US2] [packaging] (TV1) Chuẩn bị artifact đóng gói đính kèm Release (zip/bundle chạy được) — build `dist/chonoi-v1.0.0.zip` bằng `tools/package.py`, giải nén chạy được; CHƯA đính kèm Release (cần `gh release upload`)
+- [x] T422 [US2] [soak] (TV5) Implement/runner `<soak_cmd> --seed <int> --days <N> --out <soak.json>`: 1 tiến trình headless, mỗi Ngày `gather → quan → shop`, D1–D5 lặp Ngày 6–10; state tiền/uy tín/nâng cấp/id xuyên suốt; `soak.json` có `days,days_completed,crashes,results[],duration_s`; `results[]` có `day,earned,reputation,score` lúc Shop đóng — bằng chứng: chạy lại `--seed 7 --days 10` ở bản sao sạch, `days_completed 10, crashes 0`
+- [x] T423 [P] [US2] [qa] (TV5) Smoke soak ngắn (vd. `--days 1` hoặc 2) + ghi cách giảng viên chạy 10 Ngày; **không** bắt buộc chạy đủ 10 Ngày trên máy nhóm nếu hết giờ — lệnh phải sẵn sàng — bằng chứng: `docs/proof/phase-4/soak-smoke.json`, `soak.json`
 
 ## Phase 3 — Verification + CHANGELOG (phút 15–25)
-- [ ] T430 [qa] (TV5) Regression P1–P3 còn hiệu lực; lưu bằng chứng `docs/proof/phase-4/`
-- [ ] T431 [qa] (TV5) `docs/verification/phase-4.md`: ma trận `AC-P4-xx → bằng chứng → kết quả` trên commit bàn giao
+- [x] T430 [qa] (TV5) Regression P1–P3 còn hiệu lực; lưu bằng chứng `docs/proof/phase-4/` — bằng chứng: `docs/proof/phase-4/regression*.txt`; auditor chạy lại 187 test OK ở bản sao sạch
+- [x] T431 [qa] (TV5) `docs/verification/phase-4.md`: ma trận `AC-P4-xx → bằng chứng → kết quả` trên commit bàn giao — bằng chứng: `docs/verification/phase-4.md`
 - [x] T432 [P] [release] (TV1) `CHANGELOG.md` theo từng phase; rà `CREDITS.md` + `LICENSE` (starter không có LICENSE, không thêm file giả)
 - [x] T433 [P] [release] (TV6) Cập nhật `docs/clarify.md`, `docs/ai-usage-log.md` (P4)
 
@@ -39,7 +39,7 @@
 - [ ] T452 [P] [qa] (TV5) Xác nhận clone sạch / artifact Release chạy được; checklist DoD
 
 ## Phase 6 — Mở rộng (sau lõi, nếu còn giờ) — nhóm 6 cần ≥ 2 mục cả lab
-- [ ] T460 [P] [ext] (tự nhận) `leaderboard` trong `extensions`: store top 10; `--export-leaderboard`; headless `day --leaderboard --player-name` ghi 1 mục khi `reason:"days_complete"` đủ 5 Ngày; thiếu cặp cờ / sai mode → mã 2; soak không ghi — test + README
+- [ ] T460 [P] [ext] (tự nhận) `leaderboard` trong `extensions`: store top 10; `--export-leaderboard`; headless `day --leaderboard --player-name` ghi 1 mục khi `reason:"days_complete"` đủ 5 Ngày; thiếu cặp cờ / sai mode → mã 2; soak không ghi — test + README — ĐÃ có code, test (`tests/test_leaderboard.py`), README, `docs/proof/phase-4/leaderboard.md`; CÒN THIẾU: TV1 thêm `"leaderboard"` vào `extensions` trong contract
 - [x] T461 [P] [ext] (TV6/UI) Phụ đề SFX: hiện khi có SFX; chơi thử tắt tiếng — `chonoi/web/` + bằng chứng
 - [ ] T462 [P] [ext] (TV2/TV4) Hoàn thiện mở rộng P2/P3 còn dở (`burn`, `snake`, …) + khai `extensions` + test
 

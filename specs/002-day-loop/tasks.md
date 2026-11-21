@@ -8,9 +8,9 @@
 
 > Hiện trạng: `gather.py` đã có lát 1 (oxy, ngạt, ngất, `try_add_hold`); hái/bắt cá và toàn bộ `quan.py` còn `TODO(nhóm)`. Làm theo `specs/001-phase-1-core/tasks.md` với số chuẩn.
 
-- [ ] T201 [US0] [sim/gather] (TV1) Rà lát 1 theo số chuẩn: ngạt tính cả bước chạm 0, reset khi oxy > 0 hoặc lên mặt nước; `faint` dừng bước — `chonoi/sim/gather.py` (≈ P1 T009)
-- [ ] T202 [US0] [sim/gather] (TV1) `_try_gather()` hái nút ở mặt nước, ≤ 2.0 m, hòa theo id, mọc lại 1200 tick; `gather` event (≈ P1 T011)
-- [ ] T203 [US0] [sim/gather] (TV1) `_try_catch()`: dưới nước, cd 0, gần nhất ≤ 2.0 m, **đủ chỗ cả đàn** (không dùng `try_add_hold` từng món → cần hàm thêm theo lô), loại đàn đã bắt, hồi 30 tick khi thành công; `fish_caught` (≈ P1 T012)
+- [x] T201 [US0] [sim/gather] (TV1) Rà lát 1 theo số chuẩn: ngạt tính cả bước chạm 0, reset khi oxy > 0 hoặc lên mặt nước; `faint` dừng bước — `chonoi/sim/gather.py` (≈ P1 T009)
+- [x] T202 [US0] [sim/gather] (TV1) `_try_gather()` hái nút ở mặt nước, ≤ 2.0 m, hòa theo id, mọc lại 1200 tick; `gather` event (≈ P1 T011)
+- [x] T203 [US0] [sim/gather] (TV1) `_try_catch()`: dưới nước, cd 0, gần nhất ≤ 2.0 m, **đủ chỗ cả đàn** (không dùng `try_add_hold` từng món → cần hàm thêm theo lô), loại đàn đã bắt, hồi 30 tick khi thành công; `fish_caught` (≈ P1 T012)
 - [ ] T204 [P] [US0] [sim/quan] (TV3) Lõi khách: `self.tick`, lịch 120 + 900·k nếu có bàn trống, ghế id nhỏ nhất, chọn đều theo seed, giữ chỗ, `order_tick`, kiên nhẫn 3600, `customer_left` −0.5, `no_dish`, khách tập trường cố định (≈ P1 T005, T016–T019)
 - [ ] T205 [US0] [sim/quan] (TV4) Lõi bếp/bàn: một interact/tick (dist, bếp trước bàn, id), bếp lấy đơn reserved cũ nhất theo `order_tick` rồi id bàn, `cook_started/dish_ready/dish_picked/served`, ăn 600 → `paid`, boa `floor(giá·0.2)` khi ≥ 50% lúc giao, uy tín +0.2 (≈ P1 T021–T023)
 - [ ] T206 [US0] [sim/quan] (TV4) Đóng ca: khách đang ăn trả ngay, khách chờ rời không trừ uy tín, dọn món + giữ chỗ → `quan_end` (≈ P1 T024)
@@ -18,12 +18,12 @@
 
 ## Lát (1) — TV1: số chuẩn v1.1 + cá bơi/sinh
 
-- [ ] T210 [US1] [qa] (TV1) `game.contract.json` v1.1: `contract_version`, 6 món, N5/N6, `fish_*`, `fish_yield` 3 loài, `gather.monsters`, B2/T2–T4, `day_plan` D1–D5, `shop`; `team_size` 6 — chặn mọi lát dùng số mới
-- [ ] T211 [P] [US1] [qa] (TV1) `chonoi/contract.py` validate v1.1 + `chonoi/inventory.py` 6 nguyên liệu (`ca_keo`, `keo_neo`) — file khung, báo nhóm
-- [ ] T212 [P] [US1] [qa] (TV1) `docs/contracts/` mục v1.1 từ `specs/002-day-loop/contracts/*.md` (dán JSON tuning đề xuất ở `docs/research/phase-2.md` §1.4)
-- [ ] T213 [US1] [sim/gather] (TV1) `chonoi/sim/fish.py`: 8 đàn đầu ca ở 8 điểm khác nhau (seed), bơi 1.5 m/s, đổi hướng bước 120·k trước khi bơi, phản xạ mép/góc, `age_ticks`
-- [ ] T214 [US1] [sim/gather] (TV1) Sinh cá tại `phase_tick = 360·k`: trần 12, clearance > 1 m, trọng số chuẩn hóa, `fish_spawned`, `IdAllocator`; `random_fish:false` tắt bơi/sinh
-- [ ] T215 [US1] [sim/gather] (TV1) Ghép vào `GatherSim.step` theo thứ tự v1.1 (bắt cá dùng vị trí trước bơi; cá bơi/sinh sau xét hết giờ)
+- [x] T210 [US1] [qa] (TV1) `game.contract.json` v1.1: `contract_version`, 6 món, N5/N6, `fish_*`, `fish_yield` 3 loài, `gather.monsters`, B2/T2–T4, `day_plan` D1–D5, `shop`; `team_size` 6 — chặn mọi lát dùng số mới
+- [x] T211 [P] [US1] [qa] (TV1) `chonoi/contract.py` validate v1.1 + `chonoi/inventory.py` 6 nguyên liệu (`ca_keo`, `keo_neo`) — file khung, báo nhóm
+- [x] T212 [P] [US1] [qa] (TV1) `docs/contracts/` mục v1.1 từ `specs/002-day-loop/contracts/*.md` (dán JSON tuning đề xuất ở `docs/research/phase-2.md` §1.4)
+- [x] T213 [US1] [sim/gather] (TV1) `chonoi/sim/fish.py`: 8 đàn đầu ca ở 8 điểm khác nhau (seed), bơi 1.5 m/s, đổi hướng bước 120·k trước khi bơi, phản xạ mép/góc, `age_ticks`
+- [x] T214 [US1] [sim/gather] (TV1) Sinh cá tại `phase_tick = 360·k`: trần 12, clearance > 1 m, trọng số chuẩn hóa, `fish_spawned`, `IdAllocator`; `random_fish:false` tắt bơi/sinh
+- [x] T215 [US1] [sim/gather] (TV1) Ghép vào `GatherSim.step` theo thứ tự v1.1 (bắt cá dùng vị trí trước bơi; cá bơi/sinh sau xét hết giờ)
 - [ ] T216 [P] [US1] [qa] (TV5) Test AC-P2-01, 03–07
 
 ## Lát (2) — TV2: Cá Sấu, Máu, ngất, rơi LIFO
@@ -60,7 +60,7 @@
 - [ ] T252 [P] [qa] (TV5) Smoke `day --days 1` + đo thời gian ≤ 20 s; `day --days 2` mua oxy → Ngày 2 oxy max 2700; `cmp` tất định (AC-P2-23, 25, 29, 30) → `docs/proof/phase-2/`
 - [ ] T253 [qa] (TV5) `docs/verification/phase-2.md`: AC-P2-01…31 → test → kết quả trên commit bàn giao
 - [x] T254 [P] [qa] (TV6) Cập nhật `docs/clarify.md` (theo dõi #30, #32, #33 còn GIẢ ĐỊNH), `docs/ai-usage-log.md`, `docs/retro.md` (phút 45–50)
-- [ ] T255 [qa] (TV1) Gắn tag `phase-2` sau khi TV5 báo xanh (trước 1:55)
+- [x] T255 [qa] (TV1) Gắn tag `phase-2` sau khi TV5 báo xanh (trước 1:55)
 
 ## Client/UI — worker Cursor (chủ TV6), chỉ `chonoi/web/` (+ đọc `chonoi/live.py`)
 

@@ -1,0 +1,31 @@
+# Smoke day + tất định + CLI (2026-11-21T15:36:20Z, commit a5d5965)
+## AC-P2-18/25/30, AC-P3-19: day --days 1 --ticks 22200 (không input)
+exit=0 thời gian=.504575000s (mốc ≤ 20 s)
+{"type":"event","tick":0,"phase":"gather","day":1,"name":"day_start","data":{}}
+{"type":"event","tick":0,"phase":"gather","day":1,"name":"day_plan","data":{"dishes":{"ca_loc_nuong_trui":3,"goi_bong_sung":3},"ingredients":{"ca_loc":3,"bong_sung":6}}}
+{"type":"event","tick":0,"phase":"gather","day":1,"name":"phase_start","data":{}}
+{"type":"end","ticks":22200,"sim_tick":22200,"mode":"day","state":"finished","reason":"days_complete","money":0,"earned":0,"reputation":3.0,"score":300,"days_completed":1}
+## AC-P2-26/29, AC-P3-20/23: day --days 2 hai lần, so byte
+exit=0
+day x2: GIỐNG TỪNG BYTE
+{"type":"end","ticks":44400,"sim_tick":44400,"mode":"day","state":"finished","reason":"days_complete","money":0,"earned":0,"reputation":3.0,"score":300,"days_completed":2}
+## AC-P2-28: --days ngoài 1-5, --days với mode khác
+days=6 exit=2 (mong đợi 2)
+days=0 exit=2 (mong đợi 2)
+gather --days exit=2 (mong đợi 2)
+## AC-P2-05: gather 4000 tick, đếm fish_spawned
+exit=0 fish_spawned=4
+## AC-P2-03: 8 đàn ở tick 0
+đàn: 8 vị trí khác nhau: 8
+## AC-P2-15: M2 từ Ngày 3 (snapshot monsters theo ngày, day --days 3)
+exit=0
+{1: ['M1'], 2: ['M1'], 3: ['M1', 'M2']}
+{'type': 'end', 'ticks': 66600, 'sim_tick': 66600, 'mode': 'day', 'state': 'finished', 'reason': 'days_complete', 'money': 0, 'earned': 0, 'reputation': 3.0, 'score': 300, 'days_completed': 3}
+## AC-P3-08: kịch bản mẫu của đề, hold I1 fresh 30 -> spoiled tick 1, một lần
+{"type":"event","tick":1,"phase":"gather","name":"spoiled","data":{"item_id":"I1","kind":"ca_linh","location":"hold"}}
+spoiled count @600: 1
+## AC-P3-07: hold fresh 100, 60 tick
+[{'id': 'I1', 'kind': 'ca_linh', 'fresh': 99.5}]
+## AC-P3-23: tất định gather/quan 600 tick, 2 lần
+gather: GIỐNG TỪNG BYTE
+quan: GIỐNG TỪNG BYTE

@@ -1,0 +1,19 @@
+# Smoke tích hợp 2 tiến trình (2026-11-21T15:36:06Z, commit a5d5965, contract_version 1.3)
+# Bước 1: gather, hold {I1 ca_linh fresh 100, I2 ca_loc fresh 100}, interact frame 0 tại bến
+$ python3 -m chonoi.headless --mode gather --seed 1 --ticks 600 --scenario sc.json --inputs in.json --inventory-out inv.json --out g.jsonl
+{"gather":{"hold":[{"id":"I1","kind":"ca_linh","fresh":100},{"id":"I2","kind":"ca_loc","fresh":100}],"random_fish":false,"monsters":[]}}
+{"frames":[{"tick":0,"interact":true}]}
+exit=0
+--- inv.json
+{"items":[{"id":"I1","kind":"ca_linh","fresh":99.99166666666666},{"id":"I2","kind":"ca_loc","fresh":99.99166666666666}]}
+--- g.jsonl: gather_end + end
+{"type":"event","tick":1,"phase":"gather","name":"gather_end","data":{"reason":"docked","inventory":{"items":[{"id":"I1","kind":"ca_linh","fresh":99.992},{"id":"I2","kind":"ca_loc","fresh":99.992}]}}}
+{"type":"end","ticks":1,"sim_tick":1,"mode":"gather","state":"finished","reason":"docked","money":0,"earned":0,"reputation":3.0,"score":300}
+# Bước 2: quan --inventory inv.json --ticks 0
+$ python3 -m chonoi.headless --mode quan --seed 1 --ticks 0 --inventory inv.json --out q.jsonl
+exit=0
+stock snapshot tick 0: [{'id': 'I1', 'kind': 'ca_linh', 'fresh': 99.992}, {'id': 'I2', 'kind': 'ca_loc', 'fresh': 99.992}]
+KHỚP id/kind/fresh (snapshot làm tròn 3 chữ số): True
+# Kho đếm kiểu v1.0 phải bị từ chối (AC-P3-03)
+đầu vào sai: contract từ v1.2 không nhận kho đếm; items phải là mảng cá thể
+exit=2 (mong đợi 2); --out tồn tại: không

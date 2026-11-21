@@ -1,0 +1,5 @@
+# soak tái lập: --seed 7 --days 3 hai lần, bỏ duration_s (2026-11-21T15:39:12Z)
+bằng nhau: True
+{'days': 3, 'days_completed': 3, 'crashes': 0, 'results': [{'day': 1, 'earned': 0, 'reputation': 3.0, 'score': 300}, {'day': 2, 'earned': 0, 'reputation': 3.0, 'score': 300}, {'day': 3, 'earned': 0, 'reputation': 3.0, 'score': 300}]}
+# cách giảng viên chạy 10 Ngày:
+python3 -m chonoi.soak --seed 7 --days 10 --out soak.json  # ~3 s trên máy TV5
