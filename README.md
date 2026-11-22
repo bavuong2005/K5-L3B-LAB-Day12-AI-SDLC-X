@@ -1,6 +1,6 @@
 # Day 12 — AI SDLC: Quán Ăn Chợ Nổi
 
-> **Làm theo nhóm 4–6 người** · Dùng AI để xây game 2D qua **4 phase** trong **3 giờ**: Út Sen lặn bắt cá, hái rau trên mặt nước rồi tối mở quán phục vụ khách.
+> **Làm theo nhóm 4–6 người** · Dùng AI để xây game 2D qua **4 phase** trong **3 giờ**: Trường con lặn bắt cá, hái rau trên mặt nước rồi tối mở quán phục vụ khách.
 > **Yêu cầu từng phase mở đúng mốc giờ tại lab board:** **[Chợ Nổi Lab](https://claude.ai/artifact/E35v787wSx2wDgPTNhMVDg)** (cần đăng nhập claude.ai; có trợ giảng AI cho từng phase).
 
 ## Bắt buộc (chỉ có thế)
@@ -41,7 +41,7 @@ Game cần chế độ **headless** theo Test Contract (`python3 -m chonoi.headl
 
 ## Sáng tạo của nhóm
 
-Mở rộng đã làm: `burn`, `leaderboard` (đã có test và bằng chứng), cộng phụ đề SFX và chế độ tương phản cao ở UI. Lõi vẫn đúng: regression 201 test xanh, JSONL mặc định không đổi (xem [verification P4](docs/verification/phase-4.md)).
+Mở rộng đã làm: `burn`, `leaderboard` (đã có test và bằng chứng), cộng phụ đề SFX và chế độ tương phản cao ở UI. Lõi vẫn đúng: regression 268 test xanh, JSONL mặc định không đổi (xem [verification P4](docs/verification/phase-4.md)).
 
 Nhóm đã thêm **cháy món** (`burn`). Món để trên bếp quá 20 giây sẽ cháy. Quán thử giữ nguyên liệu mới cho đơn. Xem [kiểm chứng cháy món](docs/proof/phase-4/tv4-burn-2111.md).
 

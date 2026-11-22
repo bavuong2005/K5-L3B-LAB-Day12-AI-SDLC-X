@@ -1,14 +1,41 @@
 == pre-push-check ==
-Thời điểm: 2026-11-21 22:37:00
-Git: NguyenMinhPhuc @ a5d5965
+Thời điểm: 2026-11-22 09:18:17
+Git: tv6/phase-1-team-ai @ d738cf7
 SEED=1 TICKS=600
 
 -- Bước 1: unit test --
-..s............................................................................................................................s..s.s..........................................................................
+./Users/hale/Code/AI in action lab/Lab day 12/K5-L3B-LAB-Day12-AI-SDLC-X/tests/test_bench.py:26: ResourceWarning: unclosed file <_io.TextIOWrapper name='/var/folders/gc/rq42ty1s0qb9nzksxlx_xl6w0000gn/T/tmpmnl0z7wc/bench.json' mode='r' encoding='utf-8'>
+  data = json.load(open(out, encoding="utf-8"))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+./Users/hale/Code/AI in action lab/Lab day 12/K5-L3B-LAB-Day12-AI-SDLC-X/tests/test_bench.py:26: ResourceWarning: unclosed file <_io.TextIOWrapper name='/var/folders/gc/rq42ty1s0qb9nzksxlx_xl6w0000gn/T/tmpytjtlb59/bench.json' mode='r' encoding='utf-8'>
+  data = json.load(open(out, encoding="utf-8"))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..................................................................................../Users/hale/Code/AI in action lab/Lab day 12/K5-L3B-LAB-Day12-AI-SDLC-X/tests/test_live_day_ui.py:132: ResourceWarning: unclosed file <_io.TextIOWrapper name='/var/folders/gc/rq42ty1s0qb9nzksxlx_xl6w0000gn/T/tmpk_2l05i1/lb.json' mode='r' encoding='utf-8'>
+  data = json.load(open(store, encoding="utf-8"))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+/Users/hale/Code/AI in action lab/Lab day 12/K5-L3B-LAB-Day12-AI-SDLC-X/tests/test_live_day_ui.py:137: ResourceWarning: unclosed file <_io.TextIOWrapper name='/var/folders/gc/rq42ty1s0qb9nzksxlx_xl6w0000gn/T/tmpk_2l05i1/lb.json' mode='r' encoding='utf-8'>
+  self.assertEqual(len(json.load(open(store, encoding="utf-8"))["entries"]), 1)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+...../Users/hale/Code/AI in action lab/Lab day 12/K5-L3B-LAB-Day12-AI-SDLC-X/tests/test_live_static.py:53: ResourceWarning: unclosed file <_io.TextIOWrapper name='/Users/hale/Code/AI in action lab/Lab day 12/K5-L3B-LAB-Day12-AI-SDLC-X/chonoi/web/index.html' mode='r' encoding='utf-8'>
+  html = open(os.path.join(WEB_DIR, "index.html"), encoding="utf-8").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+../Users/hale/Code/AI in action lab/Lab day 12/K5-L3B-LAB-Day12-AI-SDLC-X/tests/test_live_static.py:69: ResourceWarning: unclosed file <_io.TextIOWrapper name='/Users/hale/Code/AI in action lab/Lab day 12/K5-L3B-LAB-Day12-AI-SDLC-X/chonoi/web/index.html' mode='r' encoding='utf-8'>
+  cls.html = open(os.path.join(WEB_DIR, "index.html"), encoding="utf-8").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+...../Users/hale/Code/AI in action lab/Lab day 12/K5-L3B-LAB-Day12-AI-SDLC-X/tests/test_live_static.py:126: ResourceWarning: unclosed file <_io.TextIOWrapper name='/Users/hale/Code/AI in action lab/Lab day 12/K5-L3B-LAB-Day12-AI-SDLC-X/chonoi/web/audio.js' mode='r' encoding='utf-8'>
+  audio = open(self.web + "/audio.js", encoding="utf-8").read()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+..................................chế độ đo: browser (render thật bằng trình duyệt)
+/Users/hale/Code/AI in action lab/Lab day 12/K5-L3B-LAB-Day12-AI-SDLC-X/chonoi/bench.py:278: ResourceWarning: unclosed file <_io.TextIOWrapper name='/var/folders/gc/rq42ty1s0qb9nzksxlx_xl6w0000gn/T/chonoi-bench-1hqtkj95/DevToolsActivePort' mode='r' encoding='UTF-8'>
+  port = open(port_file).read().split()[0]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+.........../Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/pty.py:95: DeprecationWarning: This process (pid=75239) is multi-threaded, use of forkpty() may lead to deadlocks in the child.
+  pid, fd = os.forkpty()
+.............................................................................................................................
 ----------------------------------------------------------------------
-Ran 207 tests in 66.724s
+Ran 268 tests in 47.188s
 
-OK (skipped=4)
+OK
 
 headless_cmd: python3 -m chonoi.headless
 -- Bước 2: tất định (cùng seed => cùng byte) --

@@ -15,3 +15,10 @@
   - Bản chép TICKET-02 lọc trùng làm rơi ô bảng và chuỗi trong ngoặc kép; phát hiện khi đối chiếu board lần 2, chép lại không lọc (`docs/ai-usage-log.md`).
   - TV3: AI báo soak 10 Ngày đỏ vì kỳ vọng "5 khách/Ngày" — đối chiếu JSONL thấy kho nhỏ + `plan_dishes` khiến `no_dish` từ lượt 3 là đúng luật; bài học: sửa kỳ vọng test theo luật, không sửa luật theo kỳ vọng, và dùng `git stash` xác nhận lỗi không có sẵn trên HEAD trước khi đụng test người khác.
 - Nếu làm lại: phút 0 mỗi phase một người khóa `game.contract.json` và gắn tag dù lõi còn nợ, ghi nợ trung thực trong verification — đừng chờ "xanh hết" rồi trễ hạn.
+
+## Phase 4 — bổ sung sau 3:00 (TV6, phiên chơi thử)
+- Chơi thử thật tìm ra lỗi UI mà test bỏ sót: pause, Shop, giữ hàng, DayResult, Summary và luồng leaderboard sai khi chơi trực tiếp. Sau khi sửa (`822c850`) mới viết thêm `tests/test_live_day_ui.py`. Bài học: test xanh không thay được một lượt chơi từ menu đến Tổng kết.
+- Chạy nhiều agent song song, mỗi agent một vùng file (art, audio/story, terminal, bench) giúp xong nhanh, nhưng phải đọc lại từng báo cáo: một bản "kiểm chứng" không kèm lệnh nên bị bỏ và chạy lại. Lệnh test đúng là `PYTHONPATH=tests:. python3 -m unittest discover -s tests`; thiếu `PYTHONPATH` cho 21 lỗi giả.
+- Bench cũ đo vòng sim, không phải render; sau khi chạy client web thật trong Chrome headless số giảm từ hàng nghìn xuống ~87 fps (`docs/proof/phase-4/bench-notes.md`). Số cũ không còn dùng làm bằng chứng.
+- Conflict khi gộp `origin/main` của TV5 (`8aab099`) nằm ở file tài liệu (verification P4, retro); giải quyết bằng cách giữ cả hai phần và ghi rõ phần của TV6 cần TV5 chạy lại trên commit bàn giao.
+- Còn nợ: `game.contract.json` `extensions` chưa có `"leaderboard"` (chỉ TV1 sửa); `docs/proof/phase-4/regression.txt` (186 test, 4 skip) là bản cũ, bản chạy lại 265 test OK 0 skip chưa lưu thành proof; TV5 chạy lại verification trên commit bàn giao.

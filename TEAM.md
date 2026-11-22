@@ -1,6 +1,6 @@
 # TEAM
 
-**Tên nhóm:** …  **Số người:** 6  (khớp `team_size` trong `game.contract.json`; TV1 sửa số này)
+**Tên nhóm:** Quán Trường con  **Số người:** 6  (khớp `team_size` trong `game.contract.json`; TV1 sửa số này)
 
 | Thành viên | GitHub handle | Module chính | Vai quy trình | Người dự phòng cho |
 |---|---|---|---|---|

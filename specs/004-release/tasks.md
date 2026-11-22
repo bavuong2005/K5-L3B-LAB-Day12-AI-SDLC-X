@@ -1,6 +1,6 @@
 # Tasks: Phase 4 — Phát hành v1.0.0 (Contract v1.3)
 
-**Input**: [`docs/prd/phase-4-ticket-04.md`](../../docs/prd/phase-4-ticket-04.md) · Chia việc: [`brief.md`](../../brief.md) mục Phase 4.
+**Input**: [`docs/prd/phase-4-ticket-04.md`](../../docs/prd/phase-4-ticket-04.md).
 **Định dạng**: `[ID] [P?] [Story] [module] (người) Mô tả — file`
 **Module**: `bench` · `client/ui` · `packaging` · `soak` · `release` · `qa` · `retro`
 **Hạn**: tag `phase-4` + GitHub Release `v1.0.0` trên `main` trước **3:00** (30 phút: 2:30–3:00).
@@ -42,6 +42,16 @@
 - [ ] T460 [P] [ext] (tự nhận) `leaderboard` trong `extensions`: store top 10; `--export-leaderboard`; headless `day --leaderboard --player-name` ghi 1 mục khi `reason:"days_complete"` đủ 5 Ngày; thiếu cặp cờ / sai mode → mã 2; soak không ghi — test + README — ĐÃ có code, test (`tests/test_leaderboard.py`), README, `docs/proof/phase-4/leaderboard.md`; CÒN THIẾU: TV1 thêm `"leaderboard"` vào `extensions` trong contract
 - [x] T461 [P] [ext] (TV6/UI) Phụ đề SFX: hiện khi có SFX; chơi thử tắt tiếng — `chonoi/web/` + bằng chứng
 - [ ] T462 [P] [ext] (TV2/TV4) Hoàn thiện mở rộng P2/P3 còn dở (`burn`, `snake`, …) + khai `extensions` + test
+
+## Phase 7 — TV6 bổ sung sau 3:00 (ngoài DoD)
+- [x] T463 [ext] [client/ui] (TV6) Đồ họa PixiJS thủ tục: nhân vật + môi trường — `chonoi/web/art/characters.js`, `environment.js`; bằng chứng: ảnh `docs/proof/phase-4/art/`, commit `0f3ee74`
+- [x] T464 [ext] [client/ui] (TV6) Hướng dẫn trong game + cốt truyện; nhân vật tên "Trường con" — `chonoi/web/story.js`, `docs/how-to-play.md`, `docs/story.md`; `tests/test_live_static.py` kiểm không còn "Út Sen" trong HTML
+- [x] T465 [ext] [client/ui] (TV6) Nhạc nền thủ tục — `chonoi/web/audio.js`
+- [x] T466 [ext] (TV6) Chế độ terminal — `chonoi/play.py`, `docs/play-cli.md`, `tests/test_play_cli.py`
+- [x] T467 [ext] (TV6) Leaderboard trong UI (top 3 ở Tổng kết) — `tests/test_leaderboard.py`, `tests/test_live_day_ui.py`; commit `822c850`; CÒN THIẾU: khai `extensions` (TV1)
+- [x] T468 [qa] (TV6) Sửa lỗi UI live (pause, Shop, giữ hàng, DayResult, Summary) sau khi chơi thử; viết lại 4 test skip lỗi thời — bằng chứng: `PYTHONPATH=tests:. python3 -m unittest discover -s tests` → 265 test OK, 0 skip (2026-11-22)
+- [x] T469 [bench] (TV6) Bench render thật (Chrome headless, CDP) + `tools/package.py` — `docs/proof/phase-4/bench.json`, `bench-notes.md`; commit `603671c`. TV5 cần chạy lại trên commit bàn giao
+- [ ] T471 [qa] (TV6) Lưu lần chạy 265 test làm proof mới (`docs/proof/phase-4/regression.txt` hiện là 186 test, 4 skip)
 
 ## Demo sau 3:00 (không chặn tag)
 - [ ] T470 [release] (TV6 dẫn, cả nhóm) Demo trực tiếp **hoặc** video `.mp4` &lt; 5 phút: (1) chơi 1 Ngày Lặn→Quán→Shop (2) show test xanh (3) bằng chứng chia việc/đóng góp (4) mở ma trận `docs/verification/phase-4.md`

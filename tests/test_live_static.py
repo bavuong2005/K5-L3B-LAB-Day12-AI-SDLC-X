@@ -108,6 +108,29 @@ class LiveTutorialStoryAudioWiringTest(unittest.TestCase):
 
     def test_character_renamed(self):
         self.assertNotIn("Út Sen", self.html)
+        self.assertNotIn("Má Tư", self.html)  # cả game gọi là Bà Tư
+
+    def test_demo_buttons_only_with_demo_param(self):
+        """Menu thật không hiện nút Demo; chỉ khi mở với ?demo."""
+        self.assertIn('const DEMO_MENU = params.has("demo");', self.html)
+        i = self.html.index("if (DEMO_MENU) {")
+        j = self.html.index('btn("demoDay"')
+        self.assertLess(i, j)
+        before = self.html[:j]
+        self.assertNotIn('btn("demoDay"', before)
+        self.assertNotIn("Khởi động nhanh các Demo", self.html[:i])
+
+    def test_no_favicon_404_and_audio_resume_guarded(self):
+        self.assertIn('rel="icon"', self.html)
+        self.assertIn("rp.catch", self.html)
+        audio = open(self.web + "/audio.js", encoding="utf-8").read()
+        self.assertIn("rp.catch", audio)
+
+    def test_first_run_story_and_tutorial_only_in_day_mode(self):
+        """Bench (mode gather, startFromMenu) không được kẹt vì hội thoại/thẻ hướng dẫn."""
+        self.assertIn("if (isDayMode() && !NO_GUIDE && !STORY.skipIntro", self.html)
+        self.assertIn('params.get("guide") === "0"', self.html)
+        self.assertIn("if (DEMO || NO_GUIDE || !isDayMode() ||", self.html)
 
 
 if __name__ == "__main__":

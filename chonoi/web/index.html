@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Quán Ăn Chợ Nổi — WebGL Live</title>
+  <link rel="icon" href="data:,">
   <style>
     html,
     body {
@@ -65,6 +66,8 @@
 
     const params = new URLSearchParams(location.search);
     const DEMO = params.get("demo");
+    const DEMO_MENU = params.has("demo");
+    const NO_GUIDE = params.get("guide") === "0"; // ?guide=0: bỏ hội thoại mở đầu + thẻ hướng dẫn lần đầu (bot / bench / test)
 
     let snap = null, offline = false;
     let uiScreen = DEMO || "menu"; // menu|dayIntro|eveningIntro|dayResult|shop|summary|play
@@ -99,7 +102,7 @@
       day_plan: {
         dishes: [{ id: "ca_loc_nuong_trui", count: 3 }, { id: "goi_bong_sung", count: 3 }],
         need: { ca_loc: 3, bong_sung: 6 },
-        speech: ["Hôm nay Má Tư cần: cá lóc nướng trui ×3,", "gỏi bông súng ×3. Lấy đủ rồi về bến nhé!"],
+        speech: ["Hôm nay Bà Tư cần: cá lóc nướng trui ×3,", "gỏi bông súng ×3. Lấy đủ rồi về bến nhé!"],
       },
       inventory_in: { ca_loc: 3, bong_sung: 6, ca_linh: 0 },
       cookable: ["ca_loc_nuong_trui", "goi_bong_sung"],
@@ -315,7 +318,7 @@
         const AC = window.AudioContext || window.webkitAudioContext;
         if (!AC) return null;
         if (!audioCtx) audioCtx = new AC();
-        if (audioCtx.state === "suspended") audioCtx.resume();
+        if (audioCtx.state === "suspended") { const rp = audioCtx.resume(); if (rp && rp.catch) rp.catch(() => {}); }
         return audioCtx;
       } catch (e) {
         return null;
@@ -709,7 +712,7 @@
         if (isDayMode() && dayPlan()) setScreen("dayIntro");
         else goPlay();
       };
-      if (isDayMode() && !STORY.skipIntro && !lsGet("chonoi_story_intro")) {
+      if (isDayMode() && !NO_GUIDE && !STORY.skipIntro && !lsGet("chonoi_story_intro")) {
         lsSet("chonoi_story_intro", "1");
         const st = storyData();
         if (st && storyStart(st.intro, go)) return;
@@ -1300,7 +1303,7 @@
     }
 
     // 3. Nhân vật Trường con — Thợ lặn (Gather) hoặc Bồi bàn bưng món (Quan)
-    function drawUtSen(sx, sy, mode, scale, p, snapHand) {
+    function drawPlayerFallback(sx, sy, mode, scale, p, snapHand) {
       ctx.save();
       ctx.translate(sx, sy);
 
@@ -1513,9 +1516,25 @@
         const m = artMods();
         if (!m || !m.E || !m.C) return false;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        // Graphics vẽ tay (cá, cây, nhân vật) có > 100 điểm bị Pixi vẽ riêng + flush batch (~30µs/cái); nâng ngưỡng để gom batch.
+        if (PIXI.GraphicsGeometry) PIXI.GraphicsGeometry.BATCHABLE_SIZE = 1500;
+        // Render phần mềm (SwiftShader / llvmpipe: headless, máy không GPU) bị giới hạn bởi tốc độ tô điểm ảnh:
+        // vẽ lớp art ở 75% độ phân giải rồi để trình duyệt phóng lên (HUD canvas 2D vẫn nét). GPU thật: giữ nguyên.
+        // Chọn MỘT lần lúc khởi tạo (đổi cỡ canvas giữa trận gây khựng vài trăm ms). ?artscale=1 để tắt.
+        let rscale = 1;
+        try {
+          const gl0 = document.createElement("canvas").getContext("webgl");
+          const ext = gl0 && gl0.getExtension("WEBGL_debug_renderer_info");
+          const rn = ext ? String(gl0.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : "";
+          if (/swiftshader|llvmpipe|software/i.test(rn)) rscale = 0.75;
+          const gl1 = gl0 && gl0.getExtension("WEBGL_lose_context"); if (gl1) gl1.loseContext();
+        } catch (e) { /* giữ 1 */ }
+        const qs = parseFloat(params.get("artscale"));
+        if (qs > 0 && qs <= 1) rscale = qs;
+        ART.rscale = rscale;
         const app = new PIXI.Application({
           width: w, height: h, backgroundAlpha: 0, antialias: false,
-          resolution: dpr, autoDensity: true, autoStart: false, sharedTicker: false,
+          resolution: dpr * rscale, autoDensity: true, autoStart: false, sharedTicker: false,
         });
         app.ticker.stop();
         const view = app.view;
@@ -2048,7 +2067,7 @@
           ctx.stroke();
         }
 
-        if (!art) drawUtSen(px, py, "gather", s, p);
+        if (!art) drawPlayerFallback(px, py, "gather", s, p);
 
         nearDock = dist2(p.pos, dp) <= dr + 0.05;
         const ir = meta.interact_radius || 2;
@@ -2118,12 +2137,12 @@
       const depth = p && p.pos ? p.pos[1].toFixed(1) + " m" : "—";
       text("Độ sâu: " + depth, 520, 32, { size: 18, color: "#81d4fa" });
 
-      const surf = p && p.at_surface !== undefined ? (p.at_surface ? "Mặt nước" : "Dưới nước") : "—";
-      text(surf, w - 24, 32, { size: 18, align: "right", color: "#cfd8dc" });
+      const surf = p && p.at_surface !== undefined ? (p.at_surface ? "Mặt nước" : "Dưới nước") : "";
+      if (surf) text(surf, 520, 56, { size: 18, color: "#cfd8dc" });  // không đặt sát góc phải: nút ?/Âm/CC nằm đó
 
       if (p && p.catch_cd_ticks !== undefined) {
-        if (p.catch_cd_ticks > 0) text("Hồi bắt: " + (p.catch_cd_ticks / 60).toFixed(1) + "s", 16, 80, { size: 18, color: "#90caf9" });
-        else text("Hồi bắt: SẴN SÀNG", 16, 80, { size: 18, color: "#69f0ae", bold: true });
+        if (p.catch_cd_ticks > 0) text("Hồi bắt: " + (p.catch_cd_ticks / 60).toFixed(1) + "s", 660, 32, { size: 18, color: "#90caf9" });
+        else text("Hồi bắt: SẴN SÀNG", 660, 32, { size: 18, color: "#69f0ae", bold: true });
       }
 
       // Danh sách cần lấy theo kế hoạch (không đếm hàng ươn)
@@ -2136,7 +2155,7 @@
           return (KIND_NAME[k] || k) + "×" + (countsOk[k] || 0) + (spoiled ? "(ươn×" + spoiled + ")" : "");
         }).join("  ")
         : "(trống)";
-      text("Giỏ " + holdLine, 200, 80, { size: 18, color: "#cfd8dc" });
+      text("Giỏ " + holdLine, 150, 80, { size: 18, color: "#cfd8dc" });
       if (plan && plan.need) {
         const parts = Object.keys(plan.need).map((k) => (KIND_NAME[k] || k) + " " + (countsOk[k] || 0) + "/" + plan.need[k]);
         text("Cần lấy: " + parts.join(" · "), 16, 106, { size: 18, color: "#ffd54f", bold: true });
@@ -2144,7 +2163,7 @@
       UI.r.need = { x: 8, y: 86, w: Math.min(w - 16, 560), h: 28 };
       UI.r.oxy = { x: 122, y: 6, w: 236, h: 58 };
       const gev = lastHudEvent(GATHER_HUD_EVENTS);
-      if (gev) text(hudEventLine(gev), w - 16, 56, { size: 18, align: "right", color: "#ffe082" });
+      if (gev) text(hudEventLine(gev), w - 16, 74, { size: 18, align: "right", color: "#ffe082" });
 
       if (nearDock) text("💡 Nhấn E: Cập bến giao hàng", w / 2, h - 86, { size: 22, align: "center", color: "#ffe082", bold: true });
       else if (nearNode && p && (p.at_surface !== false)) text("💡 Nhấn E: Hái nút rau", w / 2, h - 86, { size: 22, align: "center", color: "#b9f6ca", bold: true });
@@ -2203,21 +2222,27 @@
           const bx = art.S(tb.pos[0], tb.pos[1]);
           const cy = bx.y - ART.q.ppu * 2.45;
           const cd = dishOf(c);
+          // Bóng thoại vừa khít chữ, neo lệch phải bàn: không đè biển hiệu và không che chỗ đứng mặc định của người phục vụ (bên trái bàn).
+          const bl = bx.x - 16;
           if (cd) {
+            ctx.save();
+            ctx.font = "18px " + FONT;
+            const tw2 = Math.ceil(ctx.measureText(shortDish(cd)).width) + 16;
+            ctx.restore();
             ctx.fillStyle = "rgba(0,0,0,0.75)";
             ctx.beginPath();
-            ctx.roundRect ? ctx.roundRect(bx.x - 100, cy - 30, 200, 30, 6) : ctx.rect(bx.x - 100, cy - 30, 200, 30);
+            ctx.roundRect ? ctx.roundRect(bl, cy - 30, tw2, 30, 6) : ctx.rect(bl, cy - 30, tw2, 30);
             ctx.fill();
-            text(shortDish(cd), bx.x, cy - 8, { size: 18, align: "center", color: "#ffe082" });
+            text(shortDish(cd), bl + 8, cy - 8, { size: 18, color: "#ffe082" });
           }
           const pl = patienceLeft(c), pm = patienceMax(c, meta);
           if (pl !== undefined && pm > 0 && c.state !== "eating") {
             const frac = pl / pm, low = frac < 0.25;
-            bar(bx.x - 45, cy + 2, 90, 8, frac, low ? "#ff1744" : "#ffca28");
+            bar(bl, cy + 2, 90, 8, frac, low ? "#ff1744" : "#ffca28");
             if (low) {
               ctx.fillStyle = highContrast ? "#000" : "rgba(0,0,0,0.82)";
-              ctx.fillRect(bx.x + 46, cy - 40, 196, 32);
-              angryBadge(bx.x + 50, cy - 36, true);
+              ctx.fillRect(bl + 96, cy + 2 - 14, 196, 32);
+              angryBadge(bl + 100, cy + 2 - 10, true);
             }
           }
         });
@@ -2266,7 +2291,7 @@
         lerpState.player.x = lerp(lerpState.player.x, p.pos[0], 0.28);
         lerpState.player.y = lerp(lerpState.player.y, p.pos[1], 0.28);
         const px = sx(lerpState.player.x), py = sy(lerpState.player.y);
-        drawUtSen(px, py, "quan", s, p, snap.hand);
+        drawPlayerFallback(px, py, "quan", s, p, snap.hand);
       }
 
       } // end !art
@@ -2346,7 +2371,7 @@
       const spoiledSlots = allSt.filter((it) => !isUsableItem(it)).slice(0, 4);
       spoiledSlots.forEach((it, i) => drawFreshSlot(16 + i * 52, 172, 44, it, false));
       const qev = lastHudEvent(QUAN_HUD_EVENTS);
-      if (qev) text(hudEventLine(qev), w - 16, 56, { size: 18, align: "right", color: "#ffe082" });
+      if (qev) text(hudEventLine(qev), w - 16, 74, { size: 18, align: "right", color: "#ffe082" });
 
       const angry = (snap.customers || []).some((c) => {
         if (c.state === "eating") return false;
@@ -2393,30 +2418,38 @@
       text("QUÁN ĂN CHỢ NỔI", w / 2, h * 0.26, { size: 46, align: "center", bold: true, color: "#ffe082" });
       text("Sông nước Miền Tây · Trường con khởi nghiệp", w / 2, h * 0.26 + 42, { size: 22, align: "center", color: "#80deea" });
 
-      const m0 = h * 0.44;
-      btn("play", "▶ VÀO CHƠI NGAY", w / 2 - 130, m0, 260, 54, { fill: "#00695c", stroke: "#80cbc4" });
-      btn("tutorial", "❓ Hướng dẫn", w / 2 - 130, m0 + 62, 127, 44, { size: 18, fill: "#4a148c", stroke: "#ce93d8" });
-      btn("storyReplay", "📖 Cốt truyện", w / 2 + 3, m0 + 62, 127, 44, { size: 18, fill: "#4e342e", stroke: "#ffcc80" });
-      btn("contrast", highContrast ? "Tương phản: BẬT" : "👁 Chế độ tương phản cao", w / 2 - 130, m0 + 114, 260, 44, {
+      // Bố cục menu co theo chiều cao: không đè tiêu đề, nút Đóng luôn nằm trong khung.
+      const MENU_H = 296;
+      const topMin = h * 0.26 + 64;
+      const m0 = Math.max(topMin, Math.min(h * 0.44, h - 16 - MENU_H));
+      const k = Math.min(1, Math.max(0.78, (h - 16 - m0) / MENU_H));
+      const oy = (v) => m0 + Math.round(v * k);
+      const bh = (v) => Math.round(v * Math.min(1, k + 0.12));
+      btn("play", "▶ VÀO CHƠI NGAY", w / 2 - 140, oy(0), 280, bh(54), { fill: "#00695c", stroke: "#80cbc4" });
+      btn("tutorial", "❓ Hướng dẫn", w / 2 - 140, oy(62), 137, bh(44), { size: 18, fill: "#4a148c", stroke: "#ce93d8" });
+      btn("storyReplay", "📖 Cốt truyện", w / 2 + 3, oy(62), 137, bh(44), { size: 18, fill: "#4e342e", stroke: "#ffcc80" });
+      btn("contrast", highContrast ? "Tương phản: BẬT" : "👁 Chế độ tương phản cao", w / 2 - 140, oy(114), 280, bh(44), {
         size: 18,
         fill: highContrast ? "#212121" : "#1e3a4c",
         stroke: highContrast ? "#ffe600" : "#4fc3f7",
         color: highContrast ? "#ffe600" : "#e1f5fe"
       });
-      btn("toggleSound", soundOn ? "🔊 Âm thanh: BẬT (M)" : "🔇 Âm thanh: TẮT (M)", w / 2 - 130, m0 + 164, 260, 40, {
+      btn("toggleSound", soundOn ? "🔊 Âm thanh: BẬT (M)" : "🔇 Âm thanh: TẮT (M)", w / 2 - 140, oy(164), 280, bh(40), {
         size: 18, fill: soundOn ? "#1b5e20" : "#37474f", stroke: soundOn ? "#69f0ae" : "#90a4ae"
       });
-      btn("toggleCaptions", captionsOn ? "Phụ đề SFX: BẬT (N)" : "Phụ đề SFX: TẮT (N)", w / 2 - 130, m0 + 210, 260, 40, {
+      btn("toggleCaptions", captionsOn ? "Phụ đề SFX: BẬT (N)" : "Phụ đề SFX: TẮT (N)", w / 2 - 140, oy(210), 280, bh(40), {
         size: 18, fill: captionsOn ? "#0d47a1" : "#37474f", stroke: captionsOn ? "#82b1ff" : "#90a4ae"
       });
-      btn("quit", "Đóng", w / 2 - 130, m0 + 256, 260, 40, { fill: "#3e2723", stroke: "#ef5350" });
+      btn("quit", "Đóng", w / 2 - 140, oy(256), 280, bh(40), { fill: "#3e2723", stroke: "#ef5350" });
 
-      text("Khởi động nhanh các Demo:", w / 2, h - 80, { size: 18, align: "center", color: "#90a4ae" });
-      if (!DEMO) {
-        btn("demoDay", "DayIntro", w / 2 - 280, h - 54, 120, 40, { size: 18 });
-        btn("demoShop", "Shop", w / 2 - 150, h - 54, 100, 40, { size: 18 });
-        btn("demoFresh", "Fresh", w / 2 - 40, h - 54, 100, 40, { size: 18 });
-        btn("demoSfx", "SFX", w / 2 + 70, h - 54, 100, 40, { size: 18 });
+      // Nút Demo chỉ hiện khi mở với ?demo (bản chơi thật không thấy).
+      if (DEMO_MENU) {
+        const dy = Math.min(h - 54, oy(256) + bh(40) + 40);
+        text("Khởi động nhanh các Demo:", w / 2, dy - 26, { size: 18, align: "center", color: "#90a4ae" });
+        btn("demoDay", "DayIntro", w / 2 - 280, dy, 120, 40, { size: 18 });
+        btn("demoShop", "Shop", w / 2 - 150, dy, 100, 40, { size: 18 });
+        btn("demoFresh", "Fresh", w / 2 - 40, dy, 100, 40, { size: 18 });
+        btn("demoSfx", "SFX", w / 2 + 70, dy, 100, 40, { size: 18 });
       }
     }
 
@@ -2446,7 +2479,7 @@
 
       const left = storyActive() ? 4 : Math.max(0, 4 - (performance.now() - introSince) / 1000);
       text(storyActive() ? "Đang nghe chuyện… (Esc bỏ qua)" : left > 0 ? ("Tự vào sau " + left.toFixed(1) + "s · Nhấn Enter/Space để bắt đầu ngay") : "Đang vào…", w / 2, h * 0.76, { size: 18, align: "center", color: "#90caf9" });
-      btn("skipIntro", "Xuống nước hái rau bắt cá (Enter)", w / 2 - 170, h * 0.80, 340, 50, { fill: "#00695c", stroke: "#64ffda" });
+      btn("skipIntro", "Xuống nước hái rau bắt cá (Enter)", w / 2 - 170, h * 0.78, 340, 50, { fill: "#00695c", stroke: "#64ffda" });
 
       if (!DEMO && left <= 0 && !storyActive()) goPlay();
       if (DEMO && left <= 0) introSince = performance.now();
@@ -2486,11 +2519,11 @@
         y += 28;
       });
 
-      btn("skipIntro", "Bắt đầu ca tối (Enter)", w / 2 - 140, h * 0.80, 280, 50, { fill: "#d84315", stroke: "#ff8a65" });
+      btn("skipIntro", "Bắt đầu ca tối (Enter)", w / 2 - 140, h * 0.78, 280, 50, { fill: "#d84315", stroke: "#ff8a65" });
     }
 
     function drawDayResult(w, h) {
-      panel(w * 0.18, h * 0.14, w * 0.64, h * 0.68);
+      panel(w * 0.18, h * 0.14, w * 0.64, h * 0.72);
       text("TỔNG KẾT NGÀY " + dayNum(), w / 2, h * 0.24, { size: 36, align: "center", bold: true, color: "#ffe082" });
       const r = (snap && snap.day_result) || (DEMO ? DEMO_DATA.day_result : {});
       const rows = [
@@ -2503,7 +2536,7 @@
       ];
       let y = h * 0.36;
       rows.forEach(([a, b]) => { text(a + ":  " + b, w / 2, y, { size: 22, align: "center" }); y += 38; });
-      btn("skipIntro", "Vào Cửa Hàng Nâng Cấp (Shop)", w / 2 - 160, h * 0.80, 320, 48);
+      btn("skipIntro", "Vào Cửa Hàng Nâng Cấp (Shop)", w / 2 - 160, h * 0.78, 320, 48);
     }
 
     function shopCatalog() {
@@ -2570,12 +2603,12 @@
         text("Kho dư (bỏ sau Shop):", 80, h - 200, { size: 18, color: "#ffd54f" });
         shopStock.slice(0, 8).forEach((it, i) => drawFreshSlot(80 + i * 52, h - 170, 44, it, false));
       }
-      text("Esc/P pause · Xong = shop_done", 80, h - 100, { size: 18, color: "#90a4ae" });
-      btn("shopDone", "Hoàn tất nâng cấp (Enter)", w / 2 - 140, h - 80, 280, 50);
+      text("Esc/P tạm dừng · Enter: xong, sang Ngày kế", 80, h - 64, { size: 18, color: "#90a4ae" });
+      btn("shopDone", "Hoàn tất nâng cấp (Enter)", w / 2 - 140, h - 118, 280, 50);
     }
 
     function drawSummary(w, h) {
-      panel(w * 0.18, h * 0.14, w * 0.64, h * 0.68);
+      panel(w * 0.18, h * 0.14, w * 0.64, h * 0.72);
       const s = (snap && snap.summary) || (DEMO ? DEMO_DATA.summary : {});
       text("TỔNG KẾT TOÀN BỘ CHUYẾN ĐI", w / 2, h * 0.24, { size: 36, align: "center", bold: true, color: "#ffe082" });
       const rows = [
@@ -2593,7 +2626,7 @@
       } else if (lb && !lb.enabled) {
         text("Bảng xếp hạng: chạy với --leaderboard <file> --player-name <tên> để lưu điểm", w / 2, y, { size: 18, align: "center", color: "#78909c" });
       }
-      btn("summaryOk", "Về Menu Chính (Enter)", w / 2 - 130, h * 0.80, 260, 48);
+      btn("summaryOk", "Về Menu Chính (Enter)", w / 2 - 130, h * 0.78, 260, 48);
     }
 
     function drawPause(w, h) {
@@ -2928,7 +2961,7 @@
       else if (uiScreen === "menu") onButton("tutorial");
     }
     function tutMaybeStart() {
-      if (DEMO || !isDayMode() || TUT.active || storyActive() || !userStarted || uiScreen !== "play" || paused || !snap || snap.finished) return;
+      if (DEMO || NO_GUIDE || !isDayMode() || TUT.active || storyActive() || !userStarted || uiScreen !== "play" || paused || !snap || snap.finished) return;
       const tr = tutTrackNow();
       if (TUT.shown[tr] || lsGet(tutKey(tr))) return;
       tutStart(tr);

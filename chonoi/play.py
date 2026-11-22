@@ -38,7 +38,7 @@ DISH_VI = {"ca_loc_nuong_trui": "Cá lóc nướng trui", "goi_bong_sung": "Gỏ
            "ca_keo_nuong": "Cá kèo nướng", "lau_mam": "Lẩu mắm"}
 DISH_SHORT = {"ca_loc_nuong_trui": "Lóc nướng", "goi_bong_sung": "Gỏi BS", "lau_ca_linh_dien_dien": "Lẩu linh",
               "canh_chua_ca_loc": "Canh chua", "ca_keo_nuong": "Kèo nướng", "lau_mam": "Lẩu mắm"}
-UPGRADE_VI = {"oxygen": "Bình thở (oxy tối đa)", "hp": "Áo phao (Máu tối đa)"}
+UPGRADE_VI = {"oxygen": "Bình oxy (oxy tối đa)", "hp": "Áo phao (Máu tối đa)"}
 FIELD_VI = {"oxygen_max_s": "oxy tối đa {}s", "hp_max": "Máu tối đa {}"}
 REASON_VI = {"docked": "cập bến", "time": "hết giờ", "fainted": "ngất", "days_complete": "hoàn thành các Ngày",
              "patience": "hết kiên nhẫn", "closing": "đóng cửa"}
@@ -444,7 +444,7 @@ class Game:
             "dish_ready": lambda: f"Bếp {d.get('stove_id')}: món chín, lấy đi!",
             "dish_picked": lambda: f"Bưng {dish_name(d.get('dish_id'))}.",
             "served": lambda: f"Giao món tới bàn {d.get('table_id')}.",
-            "paid": lambda: f"Bàn {d.get('table_id')} trả {d.get('base_price', 0) + d.get('tip', 0)}đ (boa {d.get('tip', 0)}).",
+            "paid": lambda: f"Bàn {d.get('table_id')} trả {d.get('base_price', 0) + d.get('tip', 0)}k (boa {d.get('tip', 0)}).",
             "customer_left": lambda: f"Khách bàn {d.get('table_id')} bỏ đi ({REASON_VI.get(d.get('reason'), d.get('reason'))}).",
             "dish_burnt": lambda: "Món cháy mất!",
             "no_dish": lambda: "Hết nguyên liệu cho món khách gọi.",
@@ -604,7 +604,7 @@ def _hud_top(c, game, snap, g):
     c.put(0, 0, " " * c.w, "title")
     c.put(0, 1, "QUÁN ĂN CHỢ NỔI", "title")
     c.put(0, 20, "· " + _title_phase(game, snap), "title")
-    right = f"Tiền {snap['money']}đ  Uy tín {snap['reputation']:.1f}{g['star']}  Điểm {snap['score']}"
+    right = f"Tiền {snap['money']}k  Uy tín {snap['reputation']:.1f}{g['star']}  Điểm {snap['score']}"
     c.put(0, max(0, c.w - len(right) - 1), right, "title")
 
 
@@ -890,16 +890,16 @@ def render_intro(c, game, snap, g):
 def render_result(c, game, snap, g):
     r = game.result or {"served": 0, "left": 0, "money": 0, "tip": 0, "rep": snap["reputation"], "rep_delta": 0}
     lines = [(f"Khách đã phục vụ: {r['served']}", "good"), (f"Khách bỏ đi: {r['left']}", "bad" if r["left"] else ""),
-             (f"Tiền bán món: {r['money']}đ + boa {r['tip']}đ", ""),
+             (f"Tiền bán món: {r['money']}k + boa {r['tip']}k", ""),
              (f"Uy tín: {r['rep']:.2f} ({r['rep_delta']:+.2f})", ""), ("", ""),
-             (f"Tổng tiền hiện có: {snap['money']}đ   Điểm: {snap['score']}", "hint"), ("", ""),
+             (f"Tổng tiền hiện có: {snap['money']}k   Điểm: {snap['score']}", "hint"), ("", ""),
              ("ENTER/SPACE: vào Shop", "hint")]
     c.overlay(lines, g, f"KẾT QUẢ NGÀY {snap.get('day', 1)}", "hint")
 
 
 def render_shop(c, game, snap, g):
     _hud_top(c, game, snap, g)
-    c.put(2, 2, f"Tiền: {snap['money']}đ", "good")
+    c.put(2, 2, f"Tiền: {snap['money']}k", "good")
     c.put(2, 24, f"Còn {fmt_time(snap['time_left_ticks'])} (Shop tự đóng khi hết giờ)", "dim")
     y = 4
     cat = snap.get("shop") or {}
@@ -911,7 +911,7 @@ def render_shop(c, game, snap, g):
         if nxt:
             eff = ", ".join(FIELD_VI.get(k, k + " {}").format(v) for k, v in nxt.items() if k not in ("level", "price"))
             ok = snap["money"] >= nxt["price"]
-            c.put(y + 1, 6, f"Lên cấp {nxt['level']}: {nxt['price']}đ → {eff}  " + ("(đủ tiền, bấm số)" if ok else "(thiếu tiền)"),
+            c.put(y + 1, 6, f"Lên cấp {nxt['level']}: {nxt['price']}k → {eff}  " + ("(đủ tiền, bấm số)" if ok else "(thiếu tiền)"),
                   "good" if ok else "dim")
         else:
             c.put(y + 1, 6, "Đã tối đa", "dim")
@@ -927,7 +927,7 @@ def render_summary(c, game, snap, g):
     top = max(sorted(game.dish_counts), key=lambda k: game.dish_counts[k]) if game.dish_counts else None
     reason = REASON_VI.get(sim.reason, sim.reason)
     lines = [(f"Kết thúc: {reason}", "hint"), ("", ""), (f"Số Ngày hoàn thành: {getattr(sim, 'days_completed', '-')}", ""),
-             (f"Tiền: {snap['money']}đ   Tổng kiếm: {snap['earned']}đ", ""),
+             (f"Tiền: {snap['money']}k   Tổng kiếm: {snap['earned']}k", ""),
              (f"Uy tín: {snap['reputation']:.2f}", ""), (f"ĐIỂM: {snap['score']}", "good"),
              (f"Món bán chạy nhất: {dish_name(top) if top else '(chưa có)'}", ""), ("", ""),
              ("R: chơi lại · Q: thoát", "hint")]

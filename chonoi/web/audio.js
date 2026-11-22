@@ -386,7 +386,7 @@
           if (!AC) return false;
           buildGraph(new AC());
         }
-        if (ctx.state === "suspended" && ctx.resume) ctx.resume();
+        if (ctx.state === "suspended" && ctx.resume) { var rp = ctx.resume(); if (rp && rp.catch) rp.catch(function () { }); }
         if (E._pending !== undefined && !current) { var p = E._pending; E._pending = undefined; E.setScene(p); }
         return true;
       } catch (e) { return false; }

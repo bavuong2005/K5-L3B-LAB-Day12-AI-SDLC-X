@@ -9,6 +9,9 @@
 - `tools/package.py` tạo `dist/chonoi-v1.0.0.zip`. Bằng chứng ở `docs/proof/phase-4/`, ma trận ở `docs/verification/phase-4.md`.
 - Mở rộng `leaderboard` (`chonoi/leaderboard.py`): cờ `--leaderboard/--player-name` (headless day) và `--export-leaderboard`. Mặc định không đổi.
 - `contract_version` là `"1.3"`. Gameplay và schema kho giữ v1.2 (cá thể). `bench_cmd` và `soak_cmd` đọc version này.
+- UI (TV6, sau 3:00): đồ họa PixiJS thủ tục (`chonoi/web/art/`), hướng dẫn trong game, cốt truyện (nhân vật "Trường con"), nhạc nền thủ tục, chế độ terminal `chonoi.play`; leaderboard hiện top 3 ở Tổng kết; sửa lỗi pause/Shop/giữ hàng/DayResult/Summary.
+- `chonoi.bench` mặc định `--mode auto`: chạy client web thật trong Chrome headless (không có Chrome thì rơi về `sim`, không phải render).
+- Test: 4 test skip lỗi thời viết lại; `PYTHONPATH=tests:. python3 -m unittest discover -s tests` → 265 test OK.
 - File kho đếm đưa vào headless/live trả mã 2. Mẫu đang chạy: `docs/contracts/inventory.sample.json`.
 
 ### Phase 3

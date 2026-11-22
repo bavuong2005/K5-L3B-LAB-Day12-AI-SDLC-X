@@ -1,5 +1,0 @@
-test_real_contract_without_v11_keys_exit_2_clear_message (test_day_mode.DayCliTest.test_real_contract_without_v11_keys_exit_2_clear_message) ... skipped 'game.contract.json đã có khóa v1.1 (TV1 xong T210)'
-test_quan_inventory_6_loai_v11_con_v10_van_chan (test_quan_p2.DayModeCli.test_quan_inventory_6_loai_v11_con_v10_van_chan) ... skipped 'game.contract.json đã lên v1.1: kho 6 loại hợp lệ với cả contract thật'
-test_menu_kinds_theo_contract (test_quan_p2.KindsV11.test_menu_kinds_theo_contract) ... skipped 'game.contract.json đã lên v1.1'
-test_scenario_quan_v10_van_chan_ca_keo_la_nguyen_lieu_la (test_quan_p2.KindsV11.test_scenario_quan_v10_van_chan_ca_keo_la_nguyen_lieu_la) ... skipped 'game.contract.json đã lên v1.1: ca_keo là nguyên liệu hợp lệ'
-OK (skipped=4)

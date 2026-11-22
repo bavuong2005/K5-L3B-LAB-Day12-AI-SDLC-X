@@ -751,10 +751,10 @@
     var lp = new PIXI.Graphics().lineStyle(5, 0x4a3220).moveTo(dx1 - 14, dy - 12).lineTo(dx1 - 14, dy - 110).lineTo(dx1 - 44, dy - 110);
     dock.addChild(lp);
     var dl = lantern(PIXI, 0xe8352a); dl.x = dx1 - 44; dl.y = dy - 100; dock.addChild(dl);
-    var sign = new PIXI.Graphics().beginFill(0x5a3a1e).drawRoundedRect(dx0 + 6, dy - 108, 100, 34, 5).endFill().lineStyle(2, 0xf0c060).drawRoundedRect(dx0 + 9, dy - 105, 94, 28, 4);
+    var sign = new PIXI.Graphics().beginFill(0x5a3a1e).drawRoundedRect(dx0 + 6, dy - 100, 100, 30, 5).endFill().lineStyle(2, 0xf0c060).drawRoundedRect(dx0 + 9, dy - 97, 94, 24, 4);
     dock.addChild(sign);
     var stxt = new PIXI.Text('BẾN CHỢ', { fontFamily: 'Arial, sans-serif', fontSize: 17, fontWeight: '700', fill: 0xffe08a });
-    stxt.anchor.set(0.5); stxt.x = dx0 + 56; stxt.y = dy - 91; dock.addChild(stxt);
+    stxt.anchor.set(0.5); stxt.x = dx0 + 56; stxt.y = dy - 85; dock.addChild(stxt);
     var poles = new PIXI.Graphics().lineStyle(4, 0x4a3220).moveTo(dx0 + 6, dy - 12).lineTo(dx0 + 6, dy - 80);
     dock.addChild(poles);
     var boxes = new PIXI.Graphics().beginFill(0x8a5c32).drawRect(dx0 + 130, dy - 40, 40, 26).endFill().lineStyle(2, 0x5a3a1e).drawRect(dx0 + 130, dy - 40, 40, 26).moveTo(dx0 + 130, dy - 27).lineTo(dx0 + 170, dy - 27);
@@ -1188,7 +1188,7 @@
         opt = opt || {};
         var e = { x: x, y: y, acc: 0, on: true, rate: opt.rate || 16, kind: 'spoiled', lt: 0 };
         if (opt.label !== false) {
-          var tx = new PIXI.Text('ƯƠN', { fontFamily: 'Arial, sans-serif', fontSize: 15, fontWeight: '800', fill: 0xb6ff5a, stroke: 0x1d3a0a, strokeThickness: 4 });
+          var tx = new PIXI.Text('ƯƠN', { fontFamily: 'Arial, sans-serif', fontSize: 20, fontWeight: '800', fill: 0xe4ff7a, stroke: 0x142a06, strokeThickness: 5 });
           tx.anchor.set(0.5); root.addChild(tx); e.label = tx;
         }
         e.stop = function () { e.on = false; if (e.label) { e.label.destroy(); e.label = null; } var i = emitters.indexOf(e); if (i >= 0) emitters.splice(i, 1); };
@@ -1226,9 +1226,9 @@
           var e = emitters[i]; e.acc += dt * e.rate;
           if (e.kind === 'spoiled') {
             e.lt = (e.lt || 0) + dt;
-            if (e.label) { e.label.x = e.x; e.label.y = e.y - 44 + Math.sin(e.lt * 3) * 3; e.label.alpha = 0.75 + 0.25 * Math.sin(e.lt * 6); }
+            if (e.label) { e.label.x = e.x; e.label.y = e.y - 58 + Math.sin(e.lt * 3) * 3; e.label.alpha = 0.9 + 0.1 * Math.sin(e.lt * 6); }
             while (e.acc >= 1) { e.acc -= 1;
-              spawn(T_puff(PIXI), e.x + (Math.random() - 0.5) * 22, e.y + Math.random() * 6, { tint: Math.random() < 0.5 ? 0x7fdc3a : 0xb6e84a, vy: -22 - Math.random() * 16, vx: (Math.random() - 0.5) * 10, s0: 0.5, s1: 1.5, life: 1.4 + Math.random() * 0.6, a: 0.7, wob: 8, wf: 2 + Math.random() * 2 });
+              spawn(T_puff(PIXI), e.x + (Math.random() - 0.5) * 22, e.y + Math.random() * 6, { tint: Math.random() < 0.5 ? 0x7fdc3a : 0xb6e84a, vy: -22 - Math.random() * 16, vx: (Math.random() - 0.5) * 10, s0: 0.4, s1: 1.1, life: 1.4 + Math.random() * 0.6, a: 0.5, wob: 8, wf: 2 + Math.random() * 2 });
               if (Math.random() < 0.25) spawn(T_bubble(PIXI), e.x + (Math.random() - 0.5) * 18, e.y, { tint: 0xc8ff70, vy: -30, s0: 0.1, s1: 0.16, life: 1.1, a: 0.8, wob: 6 }); }
           } else {
             while (e.acc >= 1) { e.acc -= 1;
@@ -1346,7 +1346,7 @@
     var rope = new PIXI.Graphics().lineStyle(3, 0xd8c08a); for (i = 0; i < 4; i++) rope.drawEllipse(sx(15.3), sy(9.4), 14 - i * 3, 8 - i * 1.5); decor.addChild(rope);
     var hat = new PIXI.Container(); hat.x = sx(6.0); hat.y = sy(9.7); hat.addChild(new PIXI.Graphics().beginFill(0xe8d090).drawCircle(0, 0, 17).endFill().lineStyle(1, 0xa8884a, 0.8).drawCircle(0, 0, 12).drawCircle(0, 0, 6).drawCircle(0, 0, 1)); decor.addChild(hat);
     // bảng hiệu
-    var sg = new PIXI.Container(); sg.x = sx(8); sg.y = sy(-0.55);
+    var sg = new PIXI.Container(); sg.x = sx(4.7); sg.y = sy(-0.55); // lệch trái: chừa chỗ cho bóng thoại bàn T1/T2
     sg.addChild(new PIXI.Graphics().beginFill(0x4a2a12).drawRoundedRect(-95, -15, 190, 30, 6).endFill().lineStyle(2, 0xf0c060).drawRoundedRect(-91, -11, 182, 22, 4));
     var st = new PIXI.Text('QUÁN CHỢ NỔI', { fontFamily: 'Arial, sans-serif', fontSize: 16, fontWeight: '800', fill: 0xffe08a, letterSpacing: 2 }); st.anchor.set(0.5); sg.addChild(st); decor.addChild(sg);
 
